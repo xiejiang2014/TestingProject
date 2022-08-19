@@ -1,0 +1,9 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/MessageBox/Styles/CustomizeWithButtonMessageBoxStyles.xaml" />
+        <ResourceDictionary Source="/MessageBox/Styles/TextMessageBoxStyles.xaml" />
+        <ResourceDictionary Source="/MessageBox/Styles/WaitingBoxStyles.xaml" />
+        <ResourceDictionary Source="/MessageBox/Styles/WindowTextMessageBoxStyles.xaml" />
+		<ResourceDictionary Source="/MessageBox/Styles/WindowedCustomizeWithButtonMessageBoxStyles.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
+</ResourceDictionary>

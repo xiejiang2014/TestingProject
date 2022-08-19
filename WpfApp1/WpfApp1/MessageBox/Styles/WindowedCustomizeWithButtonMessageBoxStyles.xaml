@@ -1,0 +1,128 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:messageBox="clr-namespace:WpfApp1.MessageBox"
+    xmlns:valueConverter="clr-namespace:WpfApp1.MessageBox.ValueConverter">
+    <Style
+        x:Key="WindowedCustomizeWithButtonMessageBoxStyle"
+        TargetType="{x:Type messageBox:CustomizeWithButtonMessageBox}">
+        <Setter Property="Background" Value="#01000000" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type messageBox:CustomizeWithButtonMessageBox}">
+                    <Border
+                        x:Name="CustomizeWithButtonMessageBoxRootBorder"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        Background="White"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="6">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <StackPanel Orientation="Horizontal">
+
+                                <Image Source="/ShareDrawing.Application;component/Res/Image/TitleLogo.png" />
+
+                                <!--  标题  -->
+                                <TextBlock
+                                    Margin="6"
+                                    VerticalAlignment="Top"
+                                    FontSize="16"
+                                    FontWeight="Bold"
+                                    Foreground="#202020"
+                                    Text="{Binding Path=(messageBox:MessageBoxViewModel.Title)}" />
+
+                            </StackPanel>
+
+                            <!--  关闭按钮  -->
+                            <Button
+                                x:Name="PART_ButtonClose"
+                                Grid.Row="0"
+                                Margin="0,6,6,0"
+                                Padding="0"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Top"
+                                Cursor="Hand"
+                                Style="{DynamicResource MessageBoxCloseButtonStyle}" />
+
+                            <!--  自定义内容和按钮区  -->
+                            <Grid
+                                Grid.Row="1"
+                                MinWidth="160"
+                                Margin="6,0,6,6"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"
+                                ShowGridLines="True">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <ContentControl
+                                    Grid.Row="0"
+                                    HorizontalAlignment="Stretch"
+                                    Content="{Binding Path=(messageBox:MessageBoxViewModel.CustomizeContent)}" />
+
+
+                                <StackPanel
+                                    Grid.Row="1"
+                                    HorizontalAlignment="Center"
+                                    Orientation="Horizontal">
+
+                                    <Button
+                                        x:Name="PART_ButtonOK"
+                                        MinWidth="60"
+                                        MinHeight="30"
+                                        Margin="15"
+                                        Padding="18,4"
+                                        Content="{Binding Path=(messageBox:MessageBoxViewModel.OkButtonBehavior).ButtonContent}"
+                                        IsEnabled="{Binding Path=(messageBox:MessageBoxViewModel.OkButtonBehavior).CanExecute}"
+                                        Style="{Binding Path=(messageBox:MessageBoxViewModel.OkButtonBehavior).IsAccent,
+                                                        Converter={x:Static valueConverter:ButtonStyleConverter.Default}}" />
+
+                                    <Button
+                                        x:Name="PART_ButtonYes"
+                                        MinWidth="60"
+                                        MinHeight="30"
+                                        Margin="15"
+                                        Padding="18,4"
+                                        Content="{Binding Path=(messageBox:MessageBoxViewModel.YesButtonBehavior).ButtonContent}"
+                                        IsEnabled="{Binding Path=(messageBox:MessageBoxViewModel.YesButtonBehavior).CanExecute}"
+                                        Style="{Binding Path=(messageBox:MessageBoxViewModel.YesButtonBehavior).IsAccent,
+                                                        Converter={x:Static valueConverter:ButtonStyleConverter.Default}}" />
+
+                                    <Button
+                                        x:Name="PART_ButtonNo"
+                                        MinWidth="60"
+                                        MinHeight="30"
+                                        Margin="15"
+                                        Padding="18,4"
+                                        Content="{Binding Path=(messageBox:MessageBoxViewModel.NoButtonBehavior).ButtonContent}"
+                                        IsEnabled="{Binding Path=(messageBox:MessageBoxViewModel.NoButtonBehavior).CanExecute}"
+                                        Style="{Binding Path=(messageBox:MessageBoxViewModel.NoButtonBehavior).IsAccent,
+                                                        Converter={x:Static valueConverter:ButtonStyleConverter.Default}}" />
+
+                                    <Button
+                                        x:Name="PART_ButtonCancel"
+                                        MinWidth="60"
+                                        MinHeight="30"
+                                        Margin="15"
+                                        Padding="18,4"
+                                        Content="{Binding Path=(messageBox:MessageBoxViewModel.CancelButtonBehavior).ButtonContent}"
+                                        IsEnabled="{Binding Path=(messageBox:MessageBoxViewModel.CancelButtonBehavior).CanExecute}"
+                                        Style="{Binding Path=(messageBox:MessageBoxViewModel.CancelButtonBehavior).IsAccent,
+                                                        Converter={x:Static valueConverter:ButtonStyleConverter.Default}}" />
+                                </StackPanel>
+                            </Grid>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

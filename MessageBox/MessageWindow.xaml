@@ -1,0 +1,47 @@
+﻿<Window
+    x:Class="ShareDrawing.Tools.MessageBox.MessageWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:cdic="https://www.cdi.citic"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:messageBox="clr-namespace:ShareDrawing.Tools.MessageBox"
+    Title="MessageWindow"
+    Width="260"
+    Height="130"
+    AllowsTransparency="True"
+    Background="Transparent"
+    ShowInTaskbar="False"
+    Topmost="True"
+    WindowStyle="None"
+    mc:Ignorable="d">
+
+    <Window.Resources>
+        <Style
+            BasedOn="{StaticResource WindowedTextMessageBoxStyle}"
+            TargetType="{x:Type messageBox:TextMessageBox}" />
+
+        <Style
+            BasedOn="{StaticResource WindowedCustomizeWithButtonMessageBoxStyle}"
+            TargetType="{x:Type messageBox:CustomizeWithButtonMessageBox}" />
+
+    </Window.Resources>
+
+    <cdic:ClipBorder>
+        <cdic:ClipBorder.Effect>
+            <DropShadowEffect
+                BlurRadius="6"
+                Direction="270"
+                Opacity="0.3"
+                ShadowDepth="2"
+                Color="#202020" />
+        </cdic:ClipBorder.Effect>
+
+        <messageBox:MessageBoxManager
+            x:Name="MessageBoxManager"
+            Margin="10"
+            x:FieldModifier="public" />
+    </cdic:ClipBorder>
+
+
+</Window>
