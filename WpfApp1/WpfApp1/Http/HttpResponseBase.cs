@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace WpfApp1.Http
+namespace ShareDrawing.HttpClient.Http
 {
     /// <summary>
     /// http回复包格式
@@ -17,12 +17,12 @@ namespace WpfApp1.Http
         /// 时间戳
         /// </summary>
         [JsonProperty(PropertyName = "timestamp")]
-        public string? Timestamp { get; set; }
+        public string Timestamp { get; set; }
 
         /// <summary>
         /// 提示信息
         /// </summary>
         [JsonProperty(PropertyName = "msg")]
-        public string? Message { get; set; }
+        public string Message { get; set; }
     }
 }

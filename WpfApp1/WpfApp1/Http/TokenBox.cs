@@ -1,8 +1,8 @@
-﻿namespace WpfApp1.Http
+﻿namespace ShareDrawing.HttpClient.Http
 {
     public class TokenBox
     {
         public static TokenBox Default { get; } = new();
-        public string? Token { get; set; }
+        public        string   Token   { get; set; }
     }
 }

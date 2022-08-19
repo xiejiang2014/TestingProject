@@ -1,4 +1,4 @@
-﻿namespace WpfApp1.Http
+﻿namespace ShareDrawing.HttpClient.Http
 {
     /// <summary>
     /// http通信状态代码

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net;
 
-namespace WpfApp1.Http
+namespace ShareDrawing.HttpClient.Http
 {
     /// <summary>
     /// 包含友好提示信息的异常
@@ -11,36 +11,35 @@ namespace WpfApp1.Http
         /// <summary>
         /// 不希望用户看到的异常信息
         /// </summary>
-        public string? LogMessage { get; set; }
+        public string LogMessage { get; set; }
 
         public int Code { get; set; }
 
 
         public HttpStatusCode StatusCode { get; set; }
-
         public HttpException()
         {
             LogMessage = "创建 HttpException 没有指定 Message";
         }
 
         public HttpException(string message,
-            int code,
-            string logMessage
+                                        int    code,
+                                        string logMessage
         ) : this(message, logMessage)
         {
+
             Code = code;
         }
 
         public HttpException(string message,
-            string logMessage
+                                        string logMessage
         ) : base(message)
         {
             LogMessage = logMessage;
         }
-
         public HttpException(string message,
-            string logMessage,
-            HttpStatusCode statusCode
+                                        string logMessage, 
+                                        HttpStatusCode statusCode
         ) : base(message)
         {
             LogMessage = logMessage;
@@ -48,7 +47,7 @@ namespace WpfApp1.Http
         }
 
         public HttpException(string message,
-            int code
+                                        int    code
         ) : base(message)
         {
             Code = code;
@@ -58,16 +57,16 @@ namespace WpfApp1.Http
         {
         }
 
-        public HttpException(string message,
-            string logMessage,
-            Exception innerException
+        public HttpException(string    message,
+                                        string    logMessage,
+                                        Exception innerException
         ) : base(message, innerException)
         {
             LogMessage = logMessage;
         }
 
-        public HttpException(string message,
-            Exception innerException
+        public HttpException(string    message,
+                                        Exception innerException
         ) : base(message, innerException)
         {
         }

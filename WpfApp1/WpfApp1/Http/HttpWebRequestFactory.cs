@@ -4,30 +4,29 @@ using System.Net;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 
-namespace WpfApp1.Http
+namespace ShareDrawing.HttpClient.Http
 {
     internal static class HttpWebRequestFactory
     {
-        private static readonly string DefaultUserAgent =
-            @"Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; SV1; .NET CLR 1.1.4322; .NET CLR 2.0.50727)";
+        private static readonly string DefaultUserAgent = @"Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; SV1; .NET CLR 1.1.4322; .NET CLR 2.0.50727)";
 
-        private static bool CheckValidationResult(object sender,
-            X509Certificate? certificate,
-            X509Chain? chain,
-            SslPolicyErrors errors
+        private static bool CheckValidationResult(object          sender,
+                                                  X509Certificate certificate,
+                                                  X509Chain       chain,
+                                                  SslPolicyErrors errors
         )
         {
             return true; //总是接受
         }
 
         public static HttpWebRequest CreateHttpWebRequest(
-            string url,
-            string httpMethod,
-            string contentType,
-            NameValueCollection? headers = null,
-            int timeout = 30000,
-            string? userAgent = null,
-            CookieCollection? cookies = null
+            string              url,
+            string              httpMethod,
+            string              contentType,
+            NameValueCollection headers   = null,
+            int                 timeout   = 30000,
+            string              userAgent = "",
+            CookieCollection    cookies   = null
         )
         {
             HttpWebRequest request;
@@ -36,7 +35,7 @@ namespace WpfApp1.Http
             if (url.StartsWith("https", StringComparison.OrdinalIgnoreCase))
             {
                 ServicePointManager.ServerCertificateValidationCallback = CheckValidationResult;
-                request = (HttpWebRequest) WebRequest.Create(url);
+                request                                                 = (HttpWebRequest) WebRequest.Create(url);
 
                 request.ProtocolVersion = HttpVersion.Version10;
             }
@@ -45,11 +44,11 @@ namespace WpfApp1.Http
                 request = (HttpWebRequest) WebRequest.Create(url);
             }
 
-            request.Method = httpMethod;
+            request.Method      = httpMethod;
             request.ContentType = contentType;
 
-            ServicePointManager.Expect100Continue = false;
-            ServicePointManager.DefaultConnectionLimit = 200;
+            ServicePointManager.Expect100Continue       = false;
+            ServicePointManager.DefaultConnectionLimit  = 200;
             ServicePointManager.MaxServicePointIdleTime = 2000;
             ServicePointManager.SetTcpKeepAlive(false, 0, 0);
 

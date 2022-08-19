@@ -1,10 +1,9 @@
 ﻿using Newtonsoft.Json;
 
-namespace WpfApp1.Http
+namespace ShareDrawing.HttpClient.Http
 {
     public class HttpResponseObject<T> : HttpResponseBase
     {
-        [JsonProperty(PropertyName = "data")] 
-        public T? Data { get; set; }
+        [JsonProperty(PropertyName = "data")] public T Data { get; set; }
     }
 }

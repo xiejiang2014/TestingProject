@@ -4,7 +4,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace WpfApp1.Http
+namespace ShareDrawing.HttpClient.Http
 {
     //参考 https://stackoverflow.com/questions/41378457/c-httpclient-file-upload-progress-when-uploading-multiple-file-as-multipartfo
 
@@ -13,25 +13,29 @@ namespace WpfApp1.Http
         /// <summary>
         /// Lets keep buffer of 20kb
         /// </summary>
-        private const int DefaultBufferSize = 5 * 4096;
+        private const int defaultBufferSize = 5 * 4096;
 
-        private readonly HttpContent _content;
+        private HttpContent content;
 
-        private readonly int _bufferSize;
+        private int bufferSize;
 
         //private bool contentConsumed;
-        public Action<long, long>? Progress { get; set; }
+        public Action<long, long> Progress { get; set; }
+
+        public ProgressableStreamContent(HttpContent content) : this(content, defaultBufferSize)
+        {
+        }
 
 
-        public ProgressableStreamContent(HttpContent content, int bufferSize = DefaultBufferSize)
+        public ProgressableStreamContent(HttpContent content, int bufferSize)
         {
             if (bufferSize <= 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(bufferSize));
             }
 
-            this._content = content ?? throw new ArgumentNullException(nameof(content));
-            this._bufferSize = bufferSize;
+            this.content = content ?? throw new ArgumentNullException(nameof(content));
+            this.bufferSize = bufferSize;
 
             foreach (var h in content.Headers)
             {
@@ -39,15 +43,15 @@ namespace WpfApp1.Http
             }
         }
 
-        protected override Task SerializeToStreamAsync(Stream stream, TransportContext? context)
+        protected override Task SerializeToStreamAsync(Stream stream, TransportContext context)
         {
             return Task.Run(async () =>
             {
-                var buffer = new byte[_bufferSize];
+                var buffer = new byte[bufferSize];
                 TryComputeLength(out var size);
                 var uploaded = 0;
 
-                await using var streamAsync = await _content.ReadAsStreamAsync();
+                using var streamAsync = await content.ReadAsStreamAsync();
 
                 while (true)
                 {
@@ -77,7 +81,7 @@ namespace WpfApp1.Http
 
         protected override bool TryComputeLength(out long length)
         {
-            length = _content.Headers.ContentLength.GetValueOrDefault();
+            length = content.Headers.ContentLength.GetValueOrDefault();
             return true;
         }
 
@@ -85,7 +89,7 @@ namespace WpfApp1.Http
         {
             if (disposing)
             {
-                _content.Dispose();
+                content.Dispose();
             }
 
             base.Dispose(disposing);
