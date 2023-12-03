@@ -5,7 +5,7 @@ VisualStudioVersion = 17.2.32519.379
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WpfApp1", "WpfApp1\WpfApp1.csproj", "{A9A5EB38-984F-4B33-A55F-806424682D73}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WpfMessagBox", "WpfMessagBox\WpfMessagBox.csproj", "{B9F539A6-FAA2-408F-B83E-8BEFB3DD48CD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WpfMessageBox", "WpfMessagBox\WpfMessageBox.csproj", "{B9F539A6-FAA2-408F-B83E-8BEFB3DD48CD}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WpfMessageBoxDemo", "WpfMessageBoxDemo\WpfMessageBoxDemo.csproj", "{6471A957-3FF4-4E63-BEB6-74A182AC9C72}"
 EndProject

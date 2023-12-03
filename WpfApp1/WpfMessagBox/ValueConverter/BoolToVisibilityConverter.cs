@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
-namespace WpfMessagBox.ValueConverter;
+namespace WpfMessageBox.ValueConverter;
 
 /// <summary>
 /// 将bool转换为Visibility

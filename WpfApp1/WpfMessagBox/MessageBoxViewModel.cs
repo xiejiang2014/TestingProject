@@ -8,7 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace WpfMessagBox;
+namespace WpfMessageBox;
 
 public interface ICustomizeContentViewModel : INotifyPropertyChanged
 {
@@ -154,8 +154,7 @@ public class MessageBoxViewModel : INotifyPropertyChanged
     public static object CancelButtonDefaultContent { get; set; } = "取消";
 
     #endregion
-
-
+    
     #region Close
 
     public        ButtonBehavior CloseButtonBehavior              { get; }      = new();

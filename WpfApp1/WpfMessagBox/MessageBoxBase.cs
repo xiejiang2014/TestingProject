@@ -2,9 +2,9 @@
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
-using WpfMessagBox.ValueConverter;
+using WpfMessageBox.ValueConverter;
 
-namespace WpfMessagBox;
+namespace WpfMessageBox;
 
 [TemplatePart(Name = "PART_ButtonClose")]
 public class MessageBoxBase : Control

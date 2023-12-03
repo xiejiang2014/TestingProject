@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
 
-namespace WpfMessagBox;
+namespace WpfMessageBox;
 
 /// <summary>
 /// MessageLayer.xaml 的交互逻辑

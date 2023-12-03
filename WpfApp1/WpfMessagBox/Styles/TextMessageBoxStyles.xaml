@@ -1,7 +1,7 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:messageBox="clr-namespace:WpfMessagBox">
+    xmlns:messageBox="clr-namespace:WpfMessageBox">
 
     <Style TargetType="{x:Type messageBox:TextMessageBox}">
         <Setter Property="Background" Value="#01000000" />

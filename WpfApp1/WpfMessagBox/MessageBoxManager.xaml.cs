@@ -10,9 +10,9 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using WpfMessagBox.ValueConverter;
+using WpfMessageBox.ValueConverter;
 
-namespace WpfMessagBox;
+namespace WpfMessageBox;
 
 /// <summary>
 /// MessageBoxManager.xaml 的交互逻辑

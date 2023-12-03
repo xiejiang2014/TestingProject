@@ -1,4 +1,4 @@
-﻿namespace WpfMessagBox;
+﻿namespace WpfMessageBox;
 
 public enum MessageBoxTypes
 {

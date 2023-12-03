@@ -5,12 +5,12 @@
     <TargetFramework>net7.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
-    <AssemblyVersion>1.0.23337.1529</AssemblyVersion>
-    <FileVersion>1.0.23337.1529</FileVersion>
+    <AssemblyVersion>1.0.23337.1630</AssemblyVersion>
+    <FileVersion>1.0.23337.1630</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WpfMessagBox\WpfMessagBox.csproj" />
+    <ProjectReference Include="..\WpfMessagBox\WpfMessageBox.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace WpfMessagBox;
+namespace WpfMessageBox;
 
 internal class MessageContentTemplateSelector : DataTemplateSelector
 {

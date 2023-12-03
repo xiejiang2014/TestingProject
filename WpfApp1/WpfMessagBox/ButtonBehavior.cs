@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 
-namespace WpfMessagBox;
+namespace WpfMessageBox;
 
 public class ButtonBehavior : INotifyPropertyChanged
 {

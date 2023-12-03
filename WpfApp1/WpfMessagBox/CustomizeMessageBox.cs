@@ -2,7 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Data;
 
-namespace WpfMessagBox;
+namespace WpfMessageBox;
 
 [TemplatePart(Name = "PART_Title")]
 [TemplatePart(Name = "PART_ButtonsControl")]
