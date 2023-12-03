@@ -5,7 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:valueConverter="clr-namespace:WpfMessageBox.ValueConverter"
-    xmlns:wpfMessagBox="clr-namespace:WpfMessageBox"
+    xmlns:wpfMessageBox="clr-namespace:WpfMessageBox"
     x:Name="ThisMessageLayer"
     d:DesignHeight="450"
     d:DesignWidth="800"
@@ -18,24 +18,24 @@
 
     <!--  各种对话框的模版  -->
     <UserControl.Resources>
-        <wpfMessagBox:MessageContentTemplateSelector x:Key="MessageContentTemplateSelector" />
+        <wpfMessageBox:MessageContentTemplateSelector x:Key="MessageContentTemplateSelector" />
 
         <!--  在后台被模版选择器调用  -->
         <!--  ReSharper disable once Xaml.RedundantResource  -->
         <DataTemplate x:Key="WaitingMessageTemplate">
-            <wpfMessagBox:WaitingBox />
+            <wpfMessageBox:WaitingBox />
         </DataTemplate>
 
         <!--  在后台被模版选择器调用  -->
         <!--  ReSharper disable once Xaml.RedundantResource  -->
         <DataTemplate x:Key="TextMessageTemplate">
-            <wpfMessagBox:TextMessageBox />
+            <wpfMessageBox:TextMessageBox />
         </DataTemplate>
 
         <!--  在后台被模版选择器调用  -->
         <!--  ReSharper disable once Xaml.RedundantResource  -->
         <DataTemplate x:Key="CustomizeTemplate">
-            <wpfMessagBox:CustomizeMessageBox />
+            <wpfMessageBox:CustomizeMessageBox />
         </DataTemplate>
     </UserControl.Resources>
 

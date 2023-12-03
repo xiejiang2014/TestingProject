@@ -3,22 +3,22 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:valueConverter="clr-namespace:WpfMessageBox.ValueConverter;assembly=WpfMessagBox"
-    xmlns:wpfMessagBox="clr-namespace:WpfMessageBox;assembly=WpfMessagBox"
+    xmlns:wpfMessageBox="clr-namespace:WpfMessageBox;assembly=WpfMessageBox"
+    xmlns:valueConverter="clr-namespace:WpfMessageBox.ValueConverter;assembly=WpfMessageBox"
     mc:Ignorable="d">
 
     <Style
         x:Key="CustomizeMessageBoxStyleXXX"
-        TargetType="{x:Type wpfMessagBox:CustomizeMessageBox}">
+        TargetType="{x:Type wpfMessageBox:CustomizeMessageBox}">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type wpfMessagBox:CustomizeMessageBox}">
+                <ControlTemplate TargetType="{x:Type wpfMessageBox:CustomizeMessageBox}">
                     <Border
                         x:Name="CustomizeMessageBoxRootBorder"
                         HorizontalAlignment="{Binding Path=HorizontalAlignment}"
                         VerticalAlignment="{Binding Path=VerticalAlignment}"
-                        d:DataContext="{d:DesignInstance wpfMessagBox:MessageBoxViewModel}"
+                        d:DataContext="{d:DesignInstance wpfMessageBox:MessageBoxViewModel}"
                         Background="White"
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}"
@@ -70,7 +70,7 @@
                                     <ContentControl
                                         HorizontalAlignment="{Binding Path=HorizontalContentAlignment}"
                                         VerticalAlignment="{Binding Path=VerticalContentAlignment}"
-                                        Content="{Binding Path=(wpfMessagBox:MessageBoxViewModel.CustomizeContent)}"
+                                        Content="{Binding Path=(wpfMessageBox:MessageBoxViewModel.CustomizeContent)}"
                                         UseLayoutRounding="True" />
 
                                 </ScrollViewer>
@@ -87,7 +87,7 @@
                                 <ContentControl
                                     HorizontalAlignment="{Binding Path=HorizontalContentAlignment}"
                                     VerticalAlignment="{Binding Path=VerticalContentAlignment}"
-                                    Content="{Binding Path=(wpfMessagBox:MessageBoxViewModel.CustomizeContent)}"
+                                    Content="{Binding Path=(wpfMessageBox:MessageBoxViewModel.CustomizeContent)}"
                                     UseLayoutRounding="True" />
                             </Grid>
 
@@ -104,7 +104,7 @@
                                 </ItemsControl.ItemsPanel>
 
                                 <ItemsControl.ItemTemplate>
-                                    <DataTemplate DataType="{x:Type wpfMessagBox:ButtonBehavior}">
+                                    <DataTemplate DataType="{x:Type wpfMessageBox:ButtonBehavior}">
                                         <Button
                                             Content="{Binding Path=ButtonContent}"
                                             IsDefault="{Binding Path=IsDefault}"

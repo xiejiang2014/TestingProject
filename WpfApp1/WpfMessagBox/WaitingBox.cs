@@ -1,8 +1,7 @@
 using System.Windows;
 using System.Windows.Data;
-using WpfMessageBox;
 
-namespace WpfMessagBox;
+namespace WpfMessageBox;
 
 public class WaitingBox : MessageBoxBase
 {
