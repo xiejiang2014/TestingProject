@@ -4,8 +4,8 @@
     <Nullable>enable</Nullable>
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-    <AssemblyVersion>1.0.23337.1530</AssemblyVersion>
-    <FileVersion>1.0.23337.1530</FileVersion>
+    <AssemblyVersion>1.0.23337.1702</AssemblyVersion>
+    <FileVersion>1.0.23337.1702</FileVersion>
   </PropertyGroup>
 
 

@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Avalonia.Styling;
 
-namespace WpfMessagBox;
+namespace AvaMessageBox;
 
 public class ButtonBehavior : INotifyPropertyChanged
 {
