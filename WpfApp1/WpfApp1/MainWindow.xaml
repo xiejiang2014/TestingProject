@@ -8,5 +8,37 @@
     Width="800"
     Height="450"
     mc:Ignorable="d">
-    <Grid />
+
+
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+
+        <ContentControl
+            x:Name="ContentControl"
+            Background="DarkCyan" />
+
+        <StackPanel
+            Grid.Row="1"
+            Orientation="Horizontal">
+
+            <Button Click="ButtonBase_OnClick">
+                文本消息
+            </Button>
+
+
+            <Button Click="ButtonBase2_OnClick">
+                自定义内容
+            </Button>
+
+            <Button Click="ButtonBase3_OnClick">
+                自定义内容
+            </Button>
+
+        </StackPanel>
+    </Grid>
 </Window>

@@ -2,19 +2,19 @@
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Net.Security;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
-using CDIC.Tools;
 using Newtonsoft.Json;
 
 // ReSharper disable UnusedMember.Global
 
-namespace ShareDrawing.HttpClient.Http
+namespace WpfApp1.Http
 {
     /// <summary>
     /// 调用本类的方法时,主要可能会发生以下异常,注意处理
@@ -22,15 +22,18 @@ namespace ShareDrawing.HttpClient.Http
     /// ServerException            服务器未能如期处理异常
     /// ArgumentNullException       参数不能为null异常
     /// </summary>
-    public static class HttpHelper
+    public static partial class HttpHelper
     {
         public static bool CanDebug = true;
 
+        public static NameValueCollection DefaultHeaders = new NameValueCollection();
 
         /// <summary>
         /// 发生了未授权的接口调用
         /// </summary>
         public static event EventHandler<string> UnauthorizedCall;
+
+        public static Action<string, bool> Log;
 
         #region 解决证书问题
 
@@ -42,10 +45,10 @@ namespace ShareDrawing.HttpClient.Http
             ServicePointManager.ServerCertificateValidationCallback += ValidateServerCertificate;
         }
 
-        private static bool ValidateServerCertificate(object sender,
-            X509Certificate certificate,
-            X509Chain chain,
-            SslPolicyErrors sslPolicyErrors
+        private static bool ValidateServerCertificate(object          sender,
+                                                      X509Certificate certificate,
+                                                      X509Chain       chain,
+                                                      SslPolicyErrors sslPolicyErrors
         )
         {
             if (sslPolicyErrors == SslPolicyErrors.None)
@@ -61,445 +64,6 @@ namespace ShareDrawing.HttpClient.Http
 
         #region Get
 
-//        public static Task<T> HttpGetJsonAsync<T>(
-//            string url,
-//            string json,
-//            int timeOut = 300000
-//        )
-//        {
-//            return HttpGetJsonAsync<T>(url, json, null, timeOut);
-//        }
-
-
-//        public static async Task<T> HttpGetJsonAsync<T>(
-//            string url,
-//            string json,
-//            string token,
-//            int timeOut = 300000,
-//            bool debug = true
-//        )
-//        {
-//            var data = Encoding.UTF8.GetBytes(json);
-
-//            //#if DEBUG
-//            //            if (CanDebug)
-//            //                Debug.Print(
-//            //                    $"HttpGetJson请求发起:{Environment.NewLine}Url:{url}{Environment.NewLine}Token:{token}{Environment.NewLine}发出的json是{Environment.NewLine}{json}{Environment.NewLine}");
-
-//            //#endif
-
-
-//            var startDateTime = DateTime.Now;
-
-//            string resultJson;
-//            try
-//            {
-//                resultJson = await HttpMethodAsync(
-//                    url,
-//                    data,
-//                    null,
-//                    null,
-//                    string.Empty,
-//                    timeOut,
-//                    token,
-//                    "application/json",
-//                    "Get");
-
-
-//#if DEBUG
-//                var timeSpan = DateTime.Now - startDateTime;
-//                if (CanDebug && debug)
-//                    Debug.Print(
-//                        $"{Environment.NewLine}HttpGetJson请求成功: 耗时:{timeSpan.TotalMilliseconds}{Environment.NewLine}Url:{url}{Environment.NewLine}Token:{token}{Environment.NewLine}发出的json是{Environment.NewLine}{json}{Environment.NewLine}返回json是{Environment.NewLine}{resultJson}{Environment.NewLine}");
-//#endif
-//            }
-//            catch (Exception exception)
-//            {
-//#if DEBUG
-//                var timeSpan = DateTime.Now - startDateTime;
-//                if (CanDebug)
-//                    Debug.Print(
-//                        $"{Environment.NewLine}HttpGetJson请求失败: 耗时:{timeSpan.TotalMilliseconds}{Environment.NewLine}Url:{url}{Environment.NewLine}Token:{token}{Environment.NewLine}发出的json是{Environment.NewLine}{json}{Environment.NewLine}错误信息是{Environment.NewLine}{exception.Message}{Environment.NewLine}");
-//#endif
-//                throw;
-//            }
-
-
-//            var result = ParesJson<T>(resultJson);
-
-
-//            return result;
-//        }
-
-//        public static async Task<T> HttpGetJsonAsync<T>(
-//            string url,
-//            string json,
-//            CookieCollection cookies,
-//            NameValueCollection headers,
-//            string userAgent,
-//            int timeout,
-//            string token
-//        )
-//        {
-//            var data = Encoding.UTF8.GetBytes(json);
-
-//            var resultJson = await HttpMethodAsync(url, data, cookies, headers, userAgent, timeout, token,
-//                "application/json",
-//                "Get");
-//            return ParesJson<T>(resultJson);
-//        }
-
-        /// <summary>
-        /// 创建GET方式的HTTP请求
-        /// </summary>
-        /// <param name="url">请求的URL</param>
-        /// <returns></returns>
-        public static async Task<T> HttpGetAsync<T>(string url)
-        {
-            return await HttpGetAsync<T>(url, new NameValueCollection());
-        }
-
-        /// <summary>
-        /// 创建GET方式的HTTP请求
-        /// </summary>
-        /// <param name="url">请求的URL</param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public static async Task<T> HttpGetAsync<T>(string url,
-            string token,
-            bool debug = true,
-            [CallerMemberName] string funcName = ""
-        )
-        {
-            return await HttpGetAsync<T>(url, new NameValueCollection(), token, debug: debug, funcName);
-        }
-
-        /// <summary>
-        /// 创建GET方式的HTTP请求
-        /// </summary>
-        /// <param name="url">请求的URL</param>
-        /// <param name="paramName1">参数名称</param>
-        /// <param name="paramValue1">参数值</param>
-        /// <returns></returns>
-        public static async Task<T> HttpGetAsync<T>(string url,
-            string paramName1,
-            string paramValue1
-        )
-        {
-            return await HttpGetAsync<T>(url, new NameValueCollection
-            {
-                {paramName1, paramValue1}
-            });
-        }
-
-        /// <summary>
-        /// 创建GET方式的HTTP请求
-        /// </summary>
-        /// <param name="url">请求的URL</param>
-        /// <param name="paramName1">参数名称</param>
-        /// <param name="paramValue1">参数值</param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public static async Task<T> HttpGetAsync<T>(string url,
-            string paramName1,
-            string paramValue1,
-            string token,
-            bool debug = true,
-            [CallerMemberName] string funcName = ""
-        )
-        {
-            return await HttpGetAsync<T>(
-                url,
-                new NameValueCollection
-                {
-                    {paramName1, paramValue1}
-                },
-                token,
-                debug: debug,
-                funcName
-            );
-        }
-
-        /// <summary>
-        /// 创建GET方式的HTTP请求
-        /// </summary>
-        /// <param name="url">请求的URL</param>
-        /// <param name="paramName1">参数名称</param>
-        /// <param name="paramValue1">参数值</param>
-        /// <param name="paramName2"></param>
-        /// <param name="paramValue2"></param>
-        /// <returns></returns>
-        public static async Task<T> HttpGetAsync<T>(string url,
-            string paramName1,
-            string paramValue1,
-            string paramName2,
-            string paramValue2,
-            bool debug = true
-        )
-        {
-            return await HttpGetAsync<T>(
-                url,
-                new NameValueCollection
-                {
-                    {paramName1, paramValue1},
-                    {paramName2, paramValue2}
-                },
-                debug: debug);
-        }
-
-        /// <summary>
-        /// 创建GET方式的HTTP请求
-        /// </summary>
-        /// <param name="url">请求的URL</param>
-        /// <param name="paramName1">参数名称</param>
-        /// <param name="paramValue1">参数值</param>
-        /// <param name="paramName2"></param>
-        /// <param name="paramValue2"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public static async Task<T> HttpGetAsync<T>(string url,
-            string paramName1,
-            string paramValue1,
-            string paramName2,
-            string paramValue2,
-            string token,
-            bool debug = true,
-            [CallerMemberName] string funcName = ""
-        )
-        {
-            return await HttpGetAsync<T>(
-                url,
-                new NameValueCollection
-                {
-                    {paramName1, paramValue1},
-                    {paramName2, paramValue2}
-                },
-                token,
-                debug,
-                funcName
-            );
-        }
-
-        public static async Task<T> HttpGetAsync<T>(string url,
-            NameValueCollection @params,
-            bool debug = true,
-            [CallerMemberName] string funcName = ""
-        )
-        {
-            return await HttpGetAsync<T>(url, @params, string.Empty, debug: debug, funcName);
-        }
-
-        /// <summary>
-        /// 创建GET方式的HTTP请求
-        /// </summary>
-        /// <param name="url">请求的URL</param>
-        /// <param name="params">参数</param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public static async Task<T> HttpGetAsync<T>(string url,
-            NameValueCollection @params,
-            string token,
-            bool debug = true,
-            [CallerMemberName] string funcName = ""
-        )
-        {
-            var json = await HttpGetAsync(url, @params, token, debug: debug, funcName);
-
-            return ParesJson<T>(json);
-        }
-
-        /// <summary>
-        /// 创建GET方式的HTTP请求
-        /// </summary>
-        /// <param name="url">请求的URL</param>
-        /// <returns></returns>
-        public static async Task<string> HttpGetAsync(string url)
-        {
-            return await HttpGetAsync(url, new NameValueCollection());
-        }
-
-        /// <summary>
-        /// 创建GET方式的HTTP请求
-        /// </summary>
-        /// <param name="url">请求的URL</param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public static async Task<string> HttpGetAsync(string url,
-            string token
-        )
-        {
-            return await HttpGetAsync(url, new NameValueCollection(), token);
-        }
-
-        /// <summary>
-        /// 创建GET方式的HTTP请求
-        /// </summary>
-        /// <param name="url">请求的URL</param>
-        /// <param name="paramName">参数名称</param>
-        /// <param name="paramValue">参数值</param>
-        /// <returns></returns>
-        public static async Task<string> HttpGetAsync(string url,
-            string paramName,
-            string paramValue
-        )
-        {
-            return await HttpGetAsync(
-                url,
-                new NameValueCollection
-                {
-                    {paramName, paramValue}
-                });
-        }
-
-        /// <summary>
-        /// 创建GET方式的HTTP请求
-        /// </summary>
-        /// <param name="url">请求的URL</param>
-        /// <param name="paramName">参数名称</param>
-        /// <param name="paramValue">参数值</param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public static async Task<string> HttpGetAsync(string url,
-            string paramName,
-            string paramValue,
-            string token
-        )
-        {
-            return await HttpGetAsync(
-                url,
-                new NameValueCollection
-                {
-                    {paramName, paramValue}
-                },
-                token);
-        }
-
-        /// <summary>
-        /// 创建GET方式的HTTP请求
-        /// </summary>
-        /// <param name="url">请求的URL</param>
-        /// <param name="paramName1">参数名称</param>
-        /// <param name="paramValue1">参数值</param>
-        /// <param name="paramName2"></param>
-        /// <param name="paramValue2"></param>
-        /// <returns></returns>
-        public static async Task<string> HttpGetAsync(string url,
-            string paramName1,
-            string paramValue1,
-            string paramName2,
-            string paramValue2
-        )
-        {
-            return await HttpGetAsync(url, new NameValueCollection
-            {
-                {paramName1, paramValue1},
-                {paramName2, paramValue2}
-            });
-        }
-
-        /// <summary>
-        /// 创建GET方式的HTTP请求
-        /// </summary>
-        /// <param name="url">请求的URL</param>
-        /// <param name="paramName1">参数名称</param>
-        /// <param name="paramValue1">参数值</param>
-        /// <param name="paramName2"></param>
-        /// <param name="paramValue2"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public static async Task<string> HttpGetAsync(string url,
-            string paramName1,
-            string paramValue1,
-            string paramName2,
-            string paramValue2,
-            string token,
-            bool debug = true
-        )
-        {
-            return await HttpGetAsync(
-                url,
-                new NameValueCollection
-                {
-                    {paramName1, paramValue1},
-                    {paramName2, paramValue2}
-                },
-                token, debug: debug);
-        }
-
-        /// <summary>
-        /// 创建GET方式的HTTP请求
-        /// </summary>
-        /// <param name="url">请求的URL</param>
-        /// <param name="params">参数</param>
-        /// <returns></returns>
-        public static async Task<string> HttpGetAsync(string url,
-            NameValueCollection @params,
-            bool debug = true
-        )
-        {
-            return await HttpGetAsync(url, @params, string.Empty, debug: debug);
-        }
-
-        /// <summary>
-        /// 创建GET方式的HTTP请求
-        /// </summary>
-        /// <param name="url">请求的URL</param>
-        /// <param name="params">参数</param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public static async Task<string> HttpGetAsync(string url,
-            NameValueCollection @params,
-            string token,
-            bool debug = true,
-            [CallerMemberName] string funcName = ""
-        )
-        {
-            return await HttpGetAsync(url, @params, null, null, null, 300000, token, debug: debug, funcName);
-        }
-
-        public static async Task<string> HttpGetAsync(
-            string url,
-            NameValueCollection @params,
-            CookieCollection cookies,
-            NameValueCollection headers,
-            string userAgent,
-            int timeout,
-            string token,
-            bool debug = true,
-            [CallerMemberName] string funcName = ""
-        )
-        {
-            return await HttpGetAsync(url, @params, cookies, headers, userAgent, timeout, token, ResponseConverter,
-                debug, funcName);
-
-            string ResponseConverter(HttpWebResponse response)
-            {
-                if (response == null)
-                {
-                    throw new HttpException(
-                        "网络异常,请稍后再试.",
-                        $"接口调用异常,服务器没有响应.{Environment.NewLine}url:{url}{Environment.NewLine}"
-                    );
-                }
-
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    using var stream = response.GetResponseStream();
-                    if (stream != null)
-                    {
-                        using var reader = new StreamReader(stream, Encoding.UTF8);
-                        return reader.ReadToEnd();
-                    }
-                }
-
-                throw new HttpException(
-                    "网络异常,请稍后再试.",
-                    $"接口调用异常{Environment.NewLine}url:{url}{Environment.NewLine}",
-                    response.StatusCode
-                );
-            }
-        }
-
         /// <summary>
         /// 创建GET方式的HTTP请求
         /// </summary>
@@ -512,44 +76,37 @@ namespace ShareDrawing.HttpClient.Http
         /// <param name="token"></param>
         /// <param name="responseConverter">http答复转换器,通过该转换器将http结果转换为需要的结果</param>
         /// <param name="debug">是否输出调试信息</param>
+        /// <param name="funcName"></param>
         /// <returns></returns>
         public static async Task<T> HttpGetAsync<T>(
-            string url,
-            NameValueCollection @params,
-            CookieCollection cookies,
-            NameValueCollection headers,
-            string userAgent,
-            int timeout,
-            string token,
-            Func<HttpWebResponse, T> responseConverter,
-            bool debug = true,
+            string                    url,
+            NameValueCollection       @params,
+            CookieCollection?         cookies,
+            NameValueCollection?      headers,
+            string?                   userAgent,
+            int                       timeout,
+            string                    token,
+            Func<string, T>           responseConverter,
+            bool                      debug    = true,
             [CallerMemberName] string funcName = ""
         )
         {
             if (string.IsNullOrWhiteSpace(url)) throw new ArgumentNullException(nameof(url));
 
-
             var startDateTime = DateTime.Now;
 
             url += GetParamsString(@params);
 
-            HttpWebRequest request = null;
+            HttpWebRequest? request = null;
             try
             {
-                request = HttpWebRequestFactory.CreateHttpWebRequest(url, "Get",
-                    "application/x-www-form-urlencoded", headers,
-                    timeout, userAgent, cookies);
-
-                if (!string.IsNullOrWhiteSpace(token))
-                {
-                    request.Headers.Add(HttpRequestHeader.Authorization, token);
-                }
-
                 try
                 {
-                    using var response = (HttpWebResponse) await request.GetResponseAsync();
-                    var result = responseConverter.Invoke(response);
+                    var json = await GetHttpResponseTextAsync(url, null, cookies, headers, userAgent, timeout, token,
+                                                              "application/x-www-form-urlencoded",
+                                                              "Get");
 
+                    var result = responseConverter.Invoke(json);
 
                     var timeSpan = DateTime.Now - startDateTime;
                     if (CanDebug && debug)
@@ -584,124 +141,143 @@ namespace ShareDrawing.HttpClient.Http
 
         #endregion Get
 
-        /// <summary>
-        /// 将参数集合平铺为字符串
-        /// </summary>
-        /// <param name="params"></param>
-        /// <returns></returns>
-        private static string GetParamsString(NameValueCollection @params)
+        #region Post
+
+        //可用 但也无法解决日新上传文件时出现的速度波动问题
+
+        public static async Task<T> HttpPostUploadFileV3<T>(
+            string              url,
+            string              token,
+            int                 timeout,
+            string              fileName,
+            NameValueCollection nameValueCollection,
+            Stream              stream,
+            Action<long>?       sendProgressChanged = null,
+            Canceller?          canceller           = null)
         {
-            var stringBuilder = new StringBuilder();
+            using var progressMessageHandler = new System.Net.Http.Handlers.ProgressMessageHandler();
+            using var httpClient             = HttpClientFactory.Create(progressMessageHandler);
 
-            var paramsString = string.Empty;
-            if (@params != null && @params.Count > 0)
+            progressMessageHandler.HttpSendProgress += (s, e) => { sendProgressChanged?.Invoke(e.BytesTransferred); };
+
+            if (!string.IsNullOrWhiteSpace(token))
             {
-                var isFirst = true;
+                httpClient.DefaultRequestHeaders.Add("Authorization", token);
+            }
 
-                foreach (string key in @params.Keys)
+            if (DefaultHeaders is {Count: > 0})
+            {
+                foreach (string key in DefaultHeaders.Keys)
                 {
-                    stringBuilder.AppendFormat(
-                        isFirst ? "?{0}={1}" : "&{0}={1}",
-                        key,
-                        @params[key]);
-                    isFirst = false;
+                    if (!string.IsNullOrWhiteSpace(key))
+                    {
+                        httpClient.DefaultRequestHeaders.Add(key, DefaultHeaders[key]);
+                    }
                 }
             }
 
-            if (stringBuilder.Length > 0)
+            var content = new MultipartFormDataContent();
+
+            foreach (string key in nameValueCollection.Keys)
             {
-                paramsString = stringBuilder.ToString();
+                content.Add(new StringContent(nameValueCollection[key]), key);
             }
 
-            return paramsString;
+            content.Add(new StreamContent(stream), "file", fileName);
+
+            await content.LoadIntoBufferAsync();
+
+            var cts = new CancellationTokenSource();
+
+            if (canceller is not null)
+            {
+                canceller.OnCancel += OnCancellerOnOnCancel;
+            }
+
+            try
+            {
+                var httpResponseMessage = await httpClient.PostAsync(url, content, cts.Token);
+
+                var responeText = httpResponseMessage.Content.ReadAsStringAsync().Result;
+                return ParesJson<T>(responeText);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+            finally
+            {
+                if (canceller is not null)
+                {
+                    canceller.OnCancel -= OnCancellerOnOnCancel;
+                }
+            }
+
+
+            void OnCancellerOnOnCancel(object o, EventArgs args)
+            {
+                cts.Cancel();
+            }
         }
 
-        #region Post
-
-        //public static string HttpPostUploadFile(string url,
-        //    string filePath
-        //)
-        //{
-        //    return HttpPostUploadFile(url, filePath, string.Empty);
-        //}
-
-        //public static string HttpPostUploadFile(string url,
-        //    string filePath,
-        //    string token
-        //)
-        //{
-        //    var timeout = 60000;
-
-        //    return HttpPostUploadFile(url, filePath, token, timeout);
-        //}
-
-        //public static Task<T> HttpPostUploadFile<T>(string url,
-        //    string filePath,
-        //    string token,
-        //    int timeout
-        //)
-        //{
-        //    if (string.IsNullOrWhiteSpace(filePath))
-        //    {
-        //        throw new ArgumentOutOfRangeException(nameof(filePath), $@"没有传入有效的文件名.文件名:{filePath}");
-        //    }
-
-        //    if (!File.Exists(filePath))
-        //    {
-        //        throw new FileNotFoundException("文件未找到", filePath);
-        //    }
-
-        //    //请求头部信息
-        //    var strFileName = string.Empty;
-        //    if (!string.IsNullOrWhiteSpace(filePath))
-        //    {
-        //        strFileName = Path.GetFileName(filePath);
-        //    }
-
-        //    //写文件流
-        //    using Stream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-
-
-        //    return HttpPostUploadFile<T>(url, token, timeout, strFileName, fs);
-        //}
-
-        public static Task<T> HttpPostUploadFile<T>(string url, string token, int timeout, string fileName,
-            NameValueCollection nameValueCollection, byte[] bytes)
-        {
-            var stream = new MemoryStream(bytes);
-
-            return HttpPostUploadFile<T>(url, token, timeout, fileName, nameValueCollection, stream);
-        }
-
-        public static async Task<T> HttpPostUploadFile<T>(string url, string token, int timeout, string fileName,
-            NameValueCollection nameValueCollection, Stream stream)
+        public static async Task<T> HttpPostUploadFile<T>(
+            string              url,
+            string              token,
+            int                 timeout,
+            string              fileName,
+            NameValueCollection nameValueCollection,
+            Stream              stream,
+            Action<long>?       sendProgressChanged = null,
+            Canceller?          canceller           = null)
         {
             string returnJson;
 
-            HttpWebRequest httpWebRequest = null;
-            HttpWebResponse response = null;
-            Stream requestStream = null;
+            HttpWebRequest?  httpWebRequest = null;
+            HttpWebResponse? response       = null;
+            Stream?          requestStream  = null;
 
             try
             {
                 //边界符
-                var boundary = "----------" + DateTime.Now.Ticks.ToString("x");
+                var boundary    = "----------" + DateTime.Now.Ticks.ToString("x");
                 var contentType = $"multipart/form-data;boundary={boundary}";
-                httpWebRequest = HttpWebRequestFactory.CreateHttpWebRequest(url, "Post", contentType, null, timeout);
+                httpWebRequest = HttpWebRequestFactory.CreateHttpWebRequest(
+                    url,
+                    "POST",
+                    contentType,
+                    null,
+                    timeout
+                );
+
 
                 if (!string.IsNullOrWhiteSpace(token))
                 {
                     httpWebRequest.Headers.Add(HttpRequestHeader.Authorization, token);
                 }
 
-                //httpWebRequest.KeepAlive = true;
-                httpWebRequest.Credentials = CredentialCache.DefaultCredentials;
+                if (DefaultHeaders is {Count: > 0})
+                {
+                    foreach (string key in DefaultHeaders.Keys)
+                    {
+                        if (!string.IsNullOrWhiteSpace(key))
+                        {
+                            httpWebRequest.Headers.Add(key, DefaultHeaders[key]);
+                        }
+                    }
+                }
+
+
+                httpWebRequest.ProtocolVersion           = HttpVersion.Version11;
+                httpWebRequest.Credentials               = CredentialCache.DefaultCredentials;
                 httpWebRequest.AllowWriteStreamBuffering = false; //对发送的数据不使用缓存
-                httpWebRequest.SendChunked = true;
+                httpWebRequest.SendChunked               = true;
+                //httpWebRequest.Proxy                     = null;
+
 
                 //---------------------------------开始填写请求数据流
 
-                //------------body部分
+                //------------
                 requestStream = await httpWebRequest.GetRequestStreamAsync();
 
                 var boundaryBytes = Encoding.ASCII.GetBytes("\r\n--" + boundary + "\r\n");
@@ -722,7 +298,7 @@ namespace ShareDrawing.HttpClient.Http
                 await requestStream.WriteAsync(boundaryBytes, 0, boundaryBytes.Length);
 
 
-                //------------Header部分
+                //------------
 
                 var header =
                     $"Content-Disposition: form-data; name=\"file\"; filename=\"{fileName}\"\r\nContent-Type: {contentType}\r\n\r\n";
@@ -739,11 +315,21 @@ namespace ShareDrawing.HttpClient.Http
                     bufferLength = stream.Length;
                 }
 
-                var buffer = new byte[bufferLength];
-                int readBytes;
+                var  buffer = new byte[bufferLength];
+                int  readBytes;
+                long sendLength = 0;
                 while ((readBytes = await stream.ReadAsync(buffer, 0, buffer.Length)) != 0)
                 {
+                    if (canceller is not null && canceller.IsCanceled)
+                    {
+                        throw new OperationCanceledException(canceller.Reason);
+                    }
+
                     await requestStream.WriteAsync(buffer, 0, readBytes);
+                    sendLength += readBytes;
+                    sendProgressChanged?.Invoke(sendLength);
+
+                    //Debug.Print($"httpPost 文件上传进度 {sendLength}.");
                 }
 
                 //------------写入结束符
@@ -754,13 +340,21 @@ namespace ShareDrawing.HttpClient.Http
                 requestStream.Close();
 
                 //------------发送请求 得到回复
-                response = httpWebRequest.GetResponse() as HttpWebResponse;
+                Debug.Print($"httpPost 等待上传回复.");
+                var stopwatch = new Stopwatch();
+                stopwatch.Start();
+                //var result =  httpWebRequest.BeginGetResponse(new AsyncCallback(RespCallback), myRequestState);
 
+                //httpWebRequest.EndGetResponse(result);
+
+                response = httpWebRequest.GetResponse() as HttpWebResponse;
+                stopwatch.Stop();
+                Debug.Print($"httpPost 收到上传回复.等待响应耗时:{stopwatch.ElapsedMilliseconds} 毫秒");
                 //------------处理回复
                 if (response == null)
                 {
                     throw new HttpException("网络异常,请稍后再试.",
-                        $"接口调用异常,服务器没有响应.{Environment.NewLine}url:{url}{Environment.NewLine}"
+                                            $"接口调用异常,服务器没有响应.{Environment.NewLine}url:{url}{Environment.NewLine}"
                     );
                 }
 
@@ -812,154 +406,34 @@ namespace ShareDrawing.HttpClient.Http
             }
         }
 
-        public static async Task<T> HttpPostAsync<T>(
-            string url,
-            string token,
-            int timeOut = 300000,
-            [CallerMemberName] string funcName = ""
-        )
-        {
-            var startDateTime = DateTime.Now;
-            string resultJson;
-            try
-            {
-                resultJson = await HttpMethodAsync(
-                    url,
-                    null,
-                    null,
-                    null,
-                    string.Empty,
-                    timeOut,
-                    token,
-                    "application/json",
-                    "Post");
-
-
-                var result = ParesJson<T>(resultJson);
-
-#if DEBUG
-                var timeSpan = DateTime.Now - startDateTime;
-                if (CanDebug)
-                    Debug.Print(
-                        $"{Environment.NewLine}HttpPostAsync请求成功: 耗时:{timeSpan.TotalMilliseconds}    funcName:{funcName}{Environment.NewLine}Url:{url}{Environment.NewLine}Token:{token}{Environment.NewLine}返回json是{Environment.NewLine}{resultJson}{Environment.NewLine}");
-#endif
-
-                return result;
-            }
-            catch (Exception exception)
-            {
-#if DEBUG
-                var timeSpan = DateTime.Now - startDateTime;
-                if (CanDebug)
-                    Debug.Print(
-                        $"{Environment.NewLine}HttpPostAsync请求失败: 耗时:{timeSpan.TotalMilliseconds}    funcName:{funcName}{Environment.NewLine}Url:{url}{Environment.NewLine}Token:{token}{Environment.NewLine}错误信息是{Environment.NewLine}{exception.Message}{Environment.NewLine}");
-#endif
-                throw;
-            }
-        }
-
-        public static Task<T> HttpPostJsonAsync<T>(
-            string url,
-            string json,
-            int timeOut = 300000
-        )
-        {
-            return HttpPostJsonAsync<T>(url, json, null, timeOut);
-        }
-
-        public static async Task<T> HttpPostJsonAsync<T>(
-            string url,
-            string json,
-            string token,
-            int timeOut = 300000,
-            bool debug = true
-        )
-        {
-            var data = Encoding.UTF8.GetBytes(json);
-
-            //#if DEBUG
-            //            if (CanDebug)
-            //                Debug.Print(
-            //                    $"HttpPostJson请求发起:{Environment.NewLine}Url:{url}{Environment.NewLine}Token:{token}{Environment.NewLine}发出的json是{Environment.NewLine}{json}{Environment.NewLine}");
-
-            //#endif
-
-
-            var startDateTime = DateTime.Now;
-
-            string resultJson;
-            try
-            {
-                resultJson = await HttpMethodAsync(
-                    url,
-                    data,
-                    null,
-                    null,
-                    string.Empty,
-                    timeOut,
-                    token,
-                    "application/json",
-                    "Post");
-
-
-                var result = ParesJson<T>(resultJson);
-#if DEBUG
-                var timeSpan = DateTime.Now - startDateTime;
-                if (CanDebug && debug)
-                    Debug.Print(
-                        $"{Environment.NewLine}HttpPostJson请求成功: 耗时:{timeSpan.TotalMilliseconds}{Environment.NewLine}Url:{url}{Environment.NewLine}Token:{token}{Environment.NewLine}发出的json是{Environment.NewLine}{json}{Environment.NewLine}返回json是{Environment.NewLine}{resultJson}{Environment.NewLine}");
-#endif
-
-                return result;
-            }
-            catch (Exception exception)
-            {
-#if DEBUG
-                var timeSpan = DateTime.Now - startDateTime;
-                if (CanDebug)
-                    Debug.Print(
-                        $"{Environment.NewLine}HttpPostJson请求失败: 耗时:{timeSpan.TotalMilliseconds}{Environment.NewLine}Url:{url}{Environment.NewLine}Token:{token}{Environment.NewLine}发出的json是{Environment.NewLine}{json}{Environment.NewLine}错误信息是{Environment.NewLine}{exception.Message}{Environment.NewLine}");
-#endif
-                throw;
-            }
-        }
-
 
         public static async Task HttpPostJsonAsync(
-            string url,
-            string json,
-            string token,
-            int timeOut = 300000,
-            bool debug = true,
+            string                    url,
+            string                    json,
+            string                    token,
+            int                       timeOut  = 300000,
+            bool                      debug    = true,
             [CallerMemberName] string funcName = ""
         )
         {
             var data = Encoding.UTF8.GetBytes(json);
 
-            //#if DEBUG
-            //            if (CanDebug)
-            //                Debug.Print(
-            //                    $"HttpPostJson请求发起:{Environment.NewLine}Url:{url}{Environment.NewLine}Token:{token}{Environment.NewLine}发出的json是{Environment.NewLine}{json}{Environment.NewLine}");
-
-            //#endif
-
-
             var startDateTime = DateTime.Now;
 
             string resultJson;
+
             try
             {
-                resultJson = await HttpMethodAsync(
+                resultJson = await GetHttpResponseTextAsync(
                     url,
                     data,
                     null,
                     null,
-                    string.Empty,
+                    null,
                     timeOut,
                     token,
                     "application/json",
                     "Post");
-
 
 #if DEBUG
                 var timeSpan = DateTime.Now - startDateTime;
@@ -968,216 +442,73 @@ namespace ShareDrawing.HttpClient.Http
                         $"{Environment.NewLine}HttpPostJson请求成功: 耗时:{timeSpan.TotalMilliseconds}    funcName:{funcName}{Environment.NewLine}Url:{url}{Environment.NewLine}Token:{token}{Environment.NewLine}发出的json是{Environment.NewLine}{json}{Environment.NewLine}返回json是{Environment.NewLine}{resultJson}{Environment.NewLine}");
 #endif
             }
-            catch (Exception exception)
+            catch (Exception e)
             {
 #if DEBUG
                 var timeSpan = DateTime.Now - startDateTime;
                 if (CanDebug)
                     Debug.Print(
-                        $"{Environment.NewLine}HttpPostJson请求失败: 耗时:{timeSpan.TotalMilliseconds}    funcName:{funcName}{Environment.NewLine}Url:{url}{Environment.NewLine}Token:{token}{Environment.NewLine}发出的json是{Environment.NewLine}{json}{Environment.NewLine}错误信息是{Environment.NewLine}{exception.Message}{Environment.NewLine}");
+                        $"{Environment.NewLine}HttpPostJson请求失败: 耗时:{timeSpan.TotalMilliseconds}    funcName:{funcName}{Environment.NewLine}Url:{url}{Environment.NewLine}Token:{token}{Environment.NewLine}发出的json是{Environment.NewLine}{json}{Environment.NewLine}错误信息是{Environment.NewLine}{e.Message}{Environment.NewLine}");
 #endif
                 throw;
             }
+
 
             ParesJson(resultJson);
         }
 
         public static async Task<T> HttpPostJsonAsync<T>(
-            string url,
-            string json,
-            CookieCollection cookies,
-            NameValueCollection headers,
-            string userAgent,
-            int timeout,
-            string token
+            string                    url,
+            string                    json,
+            CookieCollection?         cookies,
+            NameValueCollection?      headers,
+            string?                   userAgent,
+            int                       timeout,
+            string                    token,
+            bool                      debug    = true,
+            [CallerMemberName] string funcName = ""
         )
         {
             var data = Encoding.UTF8.GetBytes(json);
 
-            var resultJson = await HttpMethodAsync(url, data, cookies, headers, userAgent, timeout, token,
-                "application/json",
-                "Post");
+            var startDateTime = DateTime.Now;
+
+            string resultJson;
+
+            try
+            {
+                resultJson = await GetHttpResponseTextAsync(
+                    url,
+                    data,
+                    cookies,
+                    headers,
+                    userAgent,
+                    timeout,
+                    token,
+                    "application/json",
+                    "Post");
+
+#if DEBUG
+                var timeSpan = DateTime.Now - startDateTime;
+                if (CanDebug && debug)
+                    Debug.Print(
+                        $"{Environment.NewLine}HttpPostJson请求成功: 耗时:{timeSpan.TotalMilliseconds}    funcName:{funcName}{Environment.NewLine}Url:{url}{Environment.NewLine}Token:{token}{Environment.NewLine}发出的json是{Environment.NewLine}{json}{Environment.NewLine}返回json是{Environment.NewLine}{resultJson}{Environment.NewLine}");
+#endif
+            }
+            catch (Exception e)
+            {
+#if DEBUG
+                var timeSpan = DateTime.Now - startDateTime;
+                if (CanDebug)
+                    Debug.Print(
+                        $"{Environment.NewLine}HttpPostJson请求失败: 耗时:{timeSpan.TotalMilliseconds}    funcName:{funcName}{Environment.NewLine}Url:{url}{Environment.NewLine}Token:{token}{Environment.NewLine}发出的json是{Environment.NewLine}{json}{Environment.NewLine}错误信息是{Environment.NewLine}{e.Message}{Environment.NewLine}");
+#endif
+                throw;
+            }
+
             return ParesJson<T>(resultJson);
         }
 
-        public static async Task<T> HttpPostXWwwFormUrlencodedAsync<T>(string url)
-        {
-            var @params = new NameValueCollection();
-
-            return await HttpPostXWwwFormUrlencodedAsync<T>(url, @params, string.Empty);
-        }
-
-        public static async Task<T> HttpPostXWwwFormUrlencodedAsync<T>(string url,
-            string token,
-            [CallerMemberName] string funcName = ""
-        )
-        {
-            var @params = new NameValueCollection();
-
-            return await HttpPostXWwwFormUrlencodedAsync<T>(url, @params, token, funcName);
-        }
-
-        public static async Task<T> HttpPostXWwwFormUrlencodedAsync<T>(string url,
-            string paramName1,
-            string paramValue1,
-            [CallerMemberName] string funcName = ""
-        )
-        {
-            return await HttpPostXWwwFormUrlencodedAsync<T>(url, paramName1, paramValue1, string.Empty, funcName);
-        }
-
-        public static async Task<T> HttpPostXWwwFormUrlencodedAsync<T>(string url,
-            string paramName1,
-            string paramValue1,
-            string token,
-            [CallerMemberName] string funcName = ""
-        )
-        {
-            var @params = new NameValueCollection
-            {
-                {paramName1, paramValue1}
-            };
-
-            return await HttpPostXWwwFormUrlencodedAsync<T>(url, @params, token, funcName);
-        }
-
-        public static async Task<T> HttpPostXWwwFormUrlencodedAsync<T>(string url,
-            string paramName1,
-            string paramValue1,
-            string paramName2,
-            string paramValue2,
-            [CallerMemberName] string funcName = ""
-        )
-        {
-            return await HttpPostXWwwFormUrlencodedAsync<T>(url, paramName1, paramValue1, paramName2, paramValue2,
-                string.Empty, funcName);
-        }
-
-        public static async Task<T> HttpPostXWwwFormUrlencodedAsync<T>(string url,
-            string paramName1,
-            string paramValue1,
-            string paramName2,
-            string paramValue2,
-            string token,
-            [CallerMemberName] string funcName = ""
-        )
-        {
-            var @params = new NameValueCollection
-            {
-                {paramName1, paramValue1},
-                {paramName2, paramValue2}
-            };
-
-            return await HttpPostXWwwFormUrlencodedAsync<T>(url, @params, token, funcName);
-        }
-
-        public static async Task<T> HttpPostXWwwFormUrlencodedAsync<T>(string url, NameValueCollection @params,
-            [CallerMemberName] string funcName = ""
-        )
-        {
-            return await HttpPostXWwwFormUrlencodedAsync<T>(url, @params, string.Empty, funcName);
-        }
-
-        public static async Task<T> HttpPostXWwwFormUrlencodedAsync<T>(string url,
-            NameValueCollection @params,
-            string token,
-            [CallerMemberName] string funcName = ""
-        )
-        {
-            var json = string.Empty;
-            var startDateTime = DateTime.Now;
-            try
-            {
-                json = await HttpPostXWwwFormUrlencodedAsync(url, @params, token);
-
-                var result = ParesJson<T>(json);
-
-                if (CanDebug)
-                {
-                    var timeSpan = DateTime.Now - startDateTime;
-                    Debug.Print(
-                        $"{Environment.NewLine}HttpPost请求成功: 耗时:{timeSpan.TotalMilliseconds}  funcName:{funcName}{Environment.NewLine}Url:{url}{Environment.NewLine}Params:{Environment.NewLine}{@params.AllKeys.ToDictionary(k => k, k => @params[k]).ToIndentedJson()}{Environment.NewLine}Token:{token}{Environment.NewLine}返回json是{Environment.NewLine}{json}{Environment.NewLine}");
-                }
-
-                return result;
-            }
-            catch (Exception)
-            {
-                if (CanDebug)
-                {
-                    var timeSpan = DateTime.Now - startDateTime;
-                    Debug.Print(
-                        $"{Environment.NewLine}HttpPost请求失败: 耗时:{timeSpan.TotalMilliseconds}  funcName:{funcName}{Environment.NewLine}Url:{url}{Environment.NewLine}Params:{Environment.NewLine}{@params.AllKeys.ToDictionary(k => k, k => @params[k]).ToIndentedJson()}{Environment.NewLine}Token:{token}{Environment.NewLine}返回json是{Environment.NewLine}{json}{Environment.NewLine}");
-                }
-
-                throw;
-            }
-        }
-
-        public static async Task<string> HttpPostXWwwFormUrlencodedAsync(string url,
-            string paramName,
-            string paramValue
-        )
-        {
-            return await HttpPostXWwwFormUrlencodedAsync(url, paramName, paramValue, string.Empty);
-        }
-
-        public static async Task<string> HttpPostXWwwFormUrlencodedAsync(string url,
-            string paramName,
-            string paramValue,
-            string token
-        )
-        {
-            var @params = new NameValueCollection
-            {
-                {paramName, paramValue}
-            };
-
-            return await HttpPostXWwwFormUrlencodedAsync(url, @params, token);
-        }
-
-        public static async Task<string> HttpPostXWwwFormUrlencodedAsync(string url,
-            string paramName1,
-            string paramValue1,
-            string paramName2,
-            string paramValue2
-        )
-        {
-            return await HttpPostXWwwFormUrlencodedAsync(url, paramName1, paramValue1, paramName2, paramValue2,
-                string.Empty);
-        }
-
-        public static async Task<string> HttpPostXWwwFormUrlencodedAsync(string url,
-            string paramName1,
-            string paramValue1,
-            string paramName2,
-            string paramValue2,
-            string token
-        )
-        {
-            var @params = new NameValueCollection
-            {
-                {paramName1, paramValue1},
-                {paramName2, paramValue2}
-            };
-
-            return await HttpPostXWwwFormUrlencodedAsync(url, @params, token);
-        }
-
-        public static async Task<string> HttpPostXWwwFormUrlencodedAsync(string url,
-            NameValueCollection @params
-        )
-        {
-            return await HttpPostXWwwFormUrlencodedAsync(url, @params, string.Empty);
-        }
-
-        public static async Task<string> HttpPostXWwwFormUrlencodedAsync(string url,
-            NameValueCollection @params,
-            string token
-        )
-        {
-            return await HttpPostXWwwFormUrlencodedAsync(url, @params, null, null, null, 300000, token);
-        }
 
         /// <summary>
         /// 创建POST方式的HTTP请求
@@ -1189,22 +520,57 @@ namespace ShareDrawing.HttpClient.Http
         /// <param name="userAgent">请求的客户端浏览器信息，可以为空</param>
         /// <param name="timeout">请求的超时时间</param>
         /// <param name="token"></param>
+        /// <param name="debug"></param>
+        /// <param name="funcName"></param>
         /// <returns></returns>
         public static async Task<string> HttpPostXWwwFormUrlencodedAsync(
-            string url,
-            NameValueCollection @params,
-            CookieCollection cookies,
-            NameValueCollection headers,
-            string userAgent,
-            int timeout,
-            string token
+            string                    url,
+            NameValueCollection       @params,
+            CookieCollection?         cookies,
+            NameValueCollection?      headers,
+            string?                   userAgent,
+            int                       timeout,
+            string                    token,
+            bool                      debug    = true,
+            [CallerMemberName] string funcName = ""
         )
         {
             var data = GetRequestBytes(@params);
-            var result = await HttpMethodAsync(url, data, cookies, headers, userAgent, timeout, token,
-                "application/x-www-form-urlencoded", "POST");
 
-            return result;
+            var startDateTime = DateTime.Now;
+            var resultJson    = string.Empty;
+            try
+            {
+                resultJson = await GetHttpResponseTextAsync(
+                    url,
+                    data,
+                    cookies,
+                    headers,
+                    userAgent,
+                    timeout,
+                    token,
+                    "application/x-www-form-urlencoded",
+                    "POST");
+
+#if DEBUG
+                var timeSpan = DateTime.Now - startDateTime;
+                if (CanDebug && debug)
+                    Debug.Print(
+                        $"{Environment.NewLine}HttpPostForm请求成功: 耗时:{timeSpan.TotalMilliseconds}    funcName:{funcName}{Environment.NewLine}Url:{url}{Environment.NewLine}Token:{token}{Environment.NewLine}返回json是{Environment.NewLine}{resultJson}{Environment.NewLine}");
+#endif
+            }
+            catch (Exception e)
+            {
+#if DEBUG
+                var timeSpan = DateTime.Now - startDateTime;
+                if (CanDebug)
+                    Debug.Print(
+                        $"{Environment.NewLine}HttpPostForm请求失败: 耗时:{timeSpan.TotalMilliseconds}    funcName:{funcName}{Environment.NewLine}Url:{url}{Environment.NewLine}Token:{token}{Environment.NewLine}错误信息是{Environment.NewLine}{resultJson}{Environment.NewLine}{e.Message}{Environment.NewLine}");
+#endif
+                throw;
+            }
+
+            return resultJson;
         }
 
         #endregion Post
@@ -1212,342 +578,143 @@ namespace ShareDrawing.HttpClient.Http
 
         #region Put
 
-        /// <summary>
-        /// 创建PUT方式的HTTP请求
-        /// </summary>
-        /// <param name="url">请求的URL</param>
-        /// <returns></returns>
-        public static async Task<T> HttpPutAsync<T>(string url)
+        public static async Task<string> HttpPutStreamData(string        url,
+                                                           string        token,
+                                                           int           timeout,
+                                                           Stream        stream,
+                                                           Action<long>? sendProgressChanged = null,
+                                                           Canceller?    canceller           = null)
         {
-            return await HttpPutAsync<T>(url, new NameValueCollection());
-        }
+            string returnJson;
 
-        /// <summary>
-        /// 创建PUT方式的HTTP请求
-        /// </summary>
-        /// <param name="url">请求的URL</param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public static async Task<T> HttpPutAsync<T>(string url,
-            string token,
-            bool debug = true
-        )
-        {
-            return await HttpPutAsync<T>(url, new NameValueCollection(), token, debug: debug);
-        }
+            HttpWebRequest?  httpWebRequest = null;
+            HttpWebResponse? response       = null;
+            Stream?          requestStream  = null;
 
-        /// <summary>
-        /// 创建PUT方式的HTTP请求
-        /// </summary>
-        /// <param name="url">请求的URL</param>
-        /// <param name="paramName1">参数名称</param>
-        /// <param name="paramValue1">参数值</param>
-        /// <returns></returns>
-        public static async Task<T> HttpPutAsync<T>(string url,
-            string paramName1,
-            string paramValue1
-        )
-        {
-            return await HttpPutAsync<T>(url, new NameValueCollection
+            ////强行使用内网地址进行上传
+            //url = url.Replace("https://wetest.cdi.citic", "http://10.37.14.111:20000");
+
+
+            try
             {
-                {paramName1, paramValue1}
-            });
-        }
+                httpWebRequest = HttpWebRequestFactory.CreateHttpWebRequest(
+                    url,
+                    "PUT",
+                    string.Empty,
+                    null,
+                    timeout
+                );
 
-        /// <summary>
-        /// 创建PUT方式的HTTP请求
-        /// </summary>
-        /// <param name="url">请求的URL</param>
-        /// <param name="paramName1">参数名称</param>
-        /// <param name="paramValue1">参数值</param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public static async Task<T> HttpPutAsync<T>(string url,
-            string paramName1,
-            string paramValue1,
-            string token,
-            bool debug = true
-        )
-        {
-            return await HttpPutAsync<T>(
-                url,
-                new NameValueCollection
+                if (!string.IsNullOrWhiteSpace(token))
                 {
-                    {paramName1, paramValue1}
-                },
-                token, debug: debug
-            );
-        }
+                    httpWebRequest.Headers.Add(HttpRequestHeader.Authorization, token);
+                }
 
-        /// <summary>
-        /// 创建PUT方式的HTTP请求
-        /// </summary>
-        /// <param name="url">请求的URL</param>
-        /// <param name="paramName1">参数名称</param>
-        /// <param name="paramValue1">参数值</param>
-        /// <param name="paramName2"></param>
-        /// <param name="paramValue2"></param>
-        /// <returns></returns>
-        public static async Task<T> HttpPutAsync<T>(string url,
-            string paramName1,
-            string paramValue1,
-            string paramName2,
-            string paramValue2,
-            bool debug = true
-        )
-        {
-            return await HttpPutAsync<T>(
-                url,
-                new NameValueCollection
+                if (DefaultHeaders is {Count: > 0})
                 {
-                    {paramName1, paramValue1},
-                    {paramName2, paramValue2}
-                },
-                debug: debug);
-        }
+                    foreach (string key in DefaultHeaders.Keys)
+                    {
+                        if (!string.IsNullOrWhiteSpace(key))
+                        {
+                            httpWebRequest.Headers.Add(key, DefaultHeaders[key]);
+                        }
+                    }
+                }
 
-        /// <summary>
-        /// 创建PUT方式的HTTP请求
-        /// </summary>
-        /// <param name="url">请求的URL</param>
-        /// <param name="paramName1">参数名称</param>
-        /// <param name="paramValue1">参数值</param>
-        /// <param name="paramName2"></param>
-        /// <param name="paramValue2"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public static async Task<T> HttpPutAsync<T>(string url,
-            string paramName1,
-            string paramValue1,
-            string paramName2,
-            string paramValue2,
-            string token
-        )
-        {
-            return await HttpPutAsync<T>(
-                url,
-                new NameValueCollection
+                httpWebRequest.ContentLength             = stream.Length;
+                httpWebRequest.ProtocolVersion           = HttpVersion.Version11;
+                httpWebRequest.Credentials               = CredentialCache.DefaultCredentials;
+                httpWebRequest.AllowWriteStreamBuffering = false; //对发送的数据不使用缓存
+                httpWebRequest.SendChunked               = true;
+
+                //------------ 写入要传输的数据
+                requestStream = await httpWebRequest.GetRequestStreamAsync();
+                long bufferLength = 4 * 1024; //每次上传4K
+                if (bufferLength > stream.Length)
                 {
-                    {paramName1, paramValue1},
-                    {paramName2, paramValue2}
-                },
-                token
-            );
-        }
+                    bufferLength = stream.Length;
+                }
 
-        public static async Task<T> HttpPutAsync<T>(string url,
-            NameValueCollection @params,
-            bool debug = true
-        )
-        {
-            return await HttpPutAsync<T>(url, @params, string.Empty, debug: debug);
-        }
-
-        /// <summary>
-        /// 创建PUT方式的HTTP请求
-        /// </summary>
-        /// <param name="url">请求的URL</param>
-        /// <param name="params">参数</param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public static async Task<T> HttpPutAsync<T>(string url,
-            NameValueCollection @params,
-            string token,
-            bool debug = true
-        )
-        {
-            var json = await HttpPutAsync(url, @params, token, debug: debug);
-
-            return ParesJson<T>(json);
-        }
-
-        /// <summary>
-        /// 创建PUT方式的HTTP请求
-        /// </summary>
-        /// <param name="url">请求的URL</param>
-        /// <returns></returns>
-        public static async Task<string> HttpPutAsync(string url)
-        {
-            return await HttpPutAsync(url, new NameValueCollection());
-        }
-
-        /// <summary>
-        /// 创建PUT方式的HTTP请求
-        /// </summary>
-        /// <param name="url">请求的URL</param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public static async Task<string> HttpPutAsync(string url,
-            string token
-        )
-        {
-            return await HttpPutAsync(url, new NameValueCollection(), token);
-        }
-
-        /// <summary>
-        /// 创建PUT方式的HTTP请求
-        /// </summary>
-        /// <param name="url">请求的URL</param>
-        /// <param name="paramName">参数名称</param>
-        /// <param name="paramValue">参数值</param>
-        /// <returns></returns>
-        public static async Task<string> HttpPutAsync(string url,
-            string paramName,
-            string paramValue
-        )
-        {
-            return await HttpPutAsync(
-                url,
-                new NameValueCollection
+                var  buffer = new byte[bufferLength];
+                int  readBytes;
+                long sendLength = 0;
+                while ((readBytes = await stream.ReadAsync(buffer, 0, buffer.Length)) != 0)
                 {
-                    {paramName, paramValue}
-                });
-        }
+                    if (canceller is not null && canceller.IsCanceled)
+                    {
+                        throw new OperationCanceledException(canceller.Reason);
+                    }
 
-        /// <summary>
-        /// 创建PUT方式的HTTP请求
-        /// </summary>
-        /// <param name="url">请求的URL</param>
-        /// <param name="paramName">参数名称</param>
-        /// <param name="paramValue">参数值</param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public static async Task<string> HttpPutAsync(string url,
-            string paramName,
-            string paramValue,
-            string token
-        )
-        {
-            return await HttpPutAsync(
-                url,
-                new NameValueCollection
-                {
-                    {paramName, paramValue}
-                },
-                token);
-        }
+                    await requestStream.WriteAsync(buffer, 0, readBytes);
+                    sendLength += readBytes;
+                    sendProgressChanged?.Invoke(sendLength); //文件上传进度变化
+                }
 
-        /// <summary>
-        /// 创建PUT方式的HTTP请求
-        /// </summary>
-        /// <param name="url">请求的URL</param>
-        /// <param name="paramName1">参数名称</param>
-        /// <param name="paramValue1">参数值</param>
-        /// <param name="paramName2"></param>
-        /// <param name="paramValue2"></param>
-        /// <returns></returns>
-        public static async Task<string> HttpPutAsync(string url,
-            string paramName1,
-            string paramValue1,
-            string paramName2,
-            string paramValue2
-        )
-        {
-            return await HttpPutAsync(url, new NameValueCollection
-            {
-                {paramName1, paramValue1},
-                {paramName2, paramValue2}
-            });
-        }
+                requestStream.Close();
+                //------------
 
-        /// <summary>
-        /// 创建PUT方式的HTTP请求
-        /// </summary>
-        /// <param name="url">请求的URL</param>
-        /// <param name="paramName1">参数名称</param>
-        /// <param name="paramValue1">参数值</param>
-        /// <param name="paramName2"></param>
-        /// <param name="paramValue2"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public static async Task<string> HttpPutAsync(string url,
-            string paramName1,
-            string paramValue1,
-            string paramName2,
-            string paramValue2,
-            string token,
-            bool debug = true
-        )
-        {
-            return await HttpPutAsync(
-                url,
-                new NameValueCollection
-                {
-                    {paramName1, paramValue1},
-                    {paramName2, paramValue2}
-                },
-                token, debug: debug);
-        }
+                //------------发送请求 得到回复
+                Debug.Print($"httpPut 等待上传回复.");
+                var stopwatch = new Stopwatch();
+                stopwatch.Start();
 
-        /// <summary>
-        /// 创建PUT方式的HTTP请求
-        /// </summary>
-        /// <param name="url">请求的URL</param>
-        /// <param name="params">参数</param>
-        /// <returns></returns>
-        public static async Task<string> HttpPutAsync(string url,
-            NameValueCollection @params,
-            bool debug = true
-        )
-        {
-            return await HttpPutAsync(url, @params, string.Empty, debug: debug);
-        }
 
-        /// <summary>
-        /// 创建PUT方式的HTTP请求
-        /// </summary>
-        /// <param name="url">请求的URL</param>
-        /// <param name="params">参数</param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public static async Task<string> HttpPutAsync(string url,
-            NameValueCollection @params,
-            string token,
-            bool debug = true
-        )
-        {
-            return await HttpPutAsync(url, @params, null, null, null, 300000, token, debug: debug);
-        }
-
-        public static async Task<string> HttpPutAsync(
-            string url,
-            NameValueCollection @params,
-            CookieCollection cookies,
-            NameValueCollection headers,
-            string userAgent,
-            int timeout,
-            string token,
-            bool debug = true
-        )
-        {
-            return await HttpPutAsync(url, @params, cookies, headers, userAgent, timeout, token, ResponseConverter,
-                debug);
-
-            string ResponseConverter(HttpWebResponse response)
-            {
+                response = httpWebRequest.GetResponse() as HttpWebResponse;
+                stopwatch.Stop();
+                Debug.Print($"httpPut 收到上传回复.等待响应耗时:{stopwatch.ElapsedMilliseconds} 毫秒");
+                //------------处理回复
                 if (response == null)
                 {
-                    throw new HttpException(
-                        "网络异常,请稍后再试.",
-                        $"接口调用异常,服务器没有响应.{Environment.NewLine}url:{url}{Environment.NewLine}"
+                    throw new HttpException("网络异常,请稍后再试.",
+                                            $"接口调用异常,服务器没有响应.{Environment.NewLine}url:{url}{Environment.NewLine}"
                     );
                 }
 
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    using var stream = response.GetResponseStream();
-                    if (stream != null)
+                    var responseStream = response.GetResponseStream();
+                    if (responseStream == null)
                     {
-                        using var reader = new StreamReader(stream, Encoding.UTF8);
-                        return reader.ReadToEnd();
+                        throw new HttpException("网络异常,请稍后再试.", "接口调用异常,没有返回 responseStream");
                     }
+
+                    using var reader = new StreamReader(responseStream, Encoding.UTF8);
+                    returnJson = await reader.ReadToEndAsync();
+
+                    Debug.Print(
+                        $"httpPost 上传成功{Environment.NewLine}URL:{url}{Environment.NewLine}Token:{token}{Environment.NewLine}结果:{returnJson}");
+                    return response.Headers["ETag"].Trim('\"');
+                }
+                else
+                {
+                    throw new HttpException(
+                        "网络异常,请稍后再试.",
+                        $"接口调用异常{Environment.NewLine}url:{url}{Environment.NewLine}",
+                        response.StatusCode
+                    );
+                }
+            }
+            catch (WebException webException)
+            {
+                if (webException.Response is HttpWebResponse {StatusCode: HttpStatusCode.Unauthorized})
+                {
+                    UnauthorizedCall?.Invoke(null, token);
                 }
 
-                throw new HttpException(
-                    "网络异常,请稍后再试.",
-                    $"接口调用异常{Environment.NewLine}url:{url}{Environment.NewLine}",
-                    response.StatusCode
-                );
+                throw;
+            }
+            catch (Exception e)
+            {
+                Debug.Print(
+                    $"httpPost 上传失败{Environment.NewLine}URL:{url}{Environment.NewLine}Token:{token}{Environment.NewLine}{e.Message}");
+                throw;
+            }
+            finally
+            {
+                httpWebRequest?.Abort();
+                response?.Close();
+                requestStream?.Close();
+                requestStream?.Dispose();
             }
         }
 
@@ -1563,66 +730,52 @@ namespace ShareDrawing.HttpClient.Http
         /// <param name="timeout">请求的超时时间</param>
         /// <param name="token"></param>
         /// <param name="responseConverter">http答复转换器,通过该转换器将http结果转换为需要的结果</param>
+        /// <param name="debug"></param>
         /// <returns></returns>
         public static async Task<T> HttpPutAsync<T>(
-            string url,
-            NameValueCollection @params,
-            CookieCollection cookies,
-            NameValueCollection headers,
-            string userAgent,
-            int timeout,
-            string token,
-            Func<HttpWebResponse, T> responseConverter,
-            bool debug = true
+            string               url,
+            NameValueCollection  @params,
+            CookieCollection?    cookies,
+            NameValueCollection? headers,
+            string?              userAgent,
+            int                  timeout,
+            string               token,
+            Func<string, T>      responseConverter,
+            bool                 debug = true
         )
         {
             if (string.IsNullOrWhiteSpace(url)) throw new ArgumentNullException(nameof(url));
 
             url += GetParamsString(@params);
 
-            HttpWebRequest request = null;
+
             try
             {
-                request = HttpWebRequestFactory.CreateHttpWebRequest(url, "Put",
-                    "application/x-www-form-urlencoded", headers,
-                    timeout, userAgent, cookies);
+                var json = await GetHttpResponseTextAsync(url,
+                                                          null,
+                                                          cookies,
+                                                          headers,
+                                                          userAgent,
+                                                          timeout,
+                                                          token,
+                                                          "application/x-www-form-urlencoded",
+                                                          "Put");
 
-                if (!string.IsNullOrWhiteSpace(token))
-                {
-                    request.Headers.Add(HttpRequestHeader.Authorization, token);
-                }
+                var result = responseConverter.Invoke(json);
 
-                try
-                {
-                    using var response = (HttpWebResponse) await request.GetResponseAsync();
-                    var result = responseConverter.Invoke(response);
+                if (CanDebug && debug)
+                    Debug.Print(
+                        $"{Environment.NewLine}HttpPutAsync 请求成功:{Environment.NewLine}Url:\t{url}{Environment.NewLine}Token:\t{token}{Environment.NewLine}返回json是:{Environment.NewLine}{result}{Environment.NewLine}");
 
-                    if (CanDebug && debug)
-                        Debug.Print(
-                            $"{Environment.NewLine}HttpPut请求成功:{Environment.NewLine}Url:\t{url}{Environment.NewLine}Token:\t{token}{Environment.NewLine}返回json是:{Environment.NewLine}{result}{Environment.NewLine}");
 
-                    return result;
-                }
-                catch (Exception e)
-                {
-                    if (CanDebug)
-                        Debug.Print(
-                            $"{Environment.NewLine}HttpPut请求失败:{Environment.NewLine}Url:\t{url}{Environment.NewLine}Token:\t{token}{Environment.NewLine}Message:\t{token}{e.Message}");
-                    throw;
-                }
+                return result;
             }
-            catch (WebException webException)
+            catch (Exception e)
             {
-                if (webException.Response is HttpWebResponse {StatusCode: HttpStatusCode.Unauthorized})
-                {
-                    UnauthorizedCall?.Invoke(null, token);
-                }
-
+                if (CanDebug)
+                    Debug.Print(
+                        $"{Environment.NewLine}HttpPut请求失败:{Environment.NewLine}Url:\t{url}{Environment.NewLine}Token:\t{token}{Environment.NewLine}Message:\t{token}{e.Message}");
                 throw;
-            }
-            finally
-            {
-                request?.Abort();
             }
         }
 
@@ -1630,25 +783,17 @@ namespace ShareDrawing.HttpClient.Http
             string url,
             string json,
             string token,
-            int timeOut = 300000
+            int    timeOut = 300000
         )
         {
             var data = Encoding.UTF8.GetBytes(json);
-
-            //#if DEBUG
-            //            if (CanDebug)
-            //                Debug.Print(
-            //                    $"HttpPutJson请求发起:{Environment.NewLine}Url:{url}{Environment.NewLine}Token:{token}{Environment.NewLine}发出的json是{Environment.NewLine}{json}{Environment.NewLine}");
-
-            //#endif
-
 
             var startDateTime = DateTime.Now;
 
             string resultJson;
             try
             {
-                resultJson = await HttpMethodAsync(
+                resultJson = await GetHttpResponseTextAsync(
                     url,
                     data,
                     null,
@@ -1683,63 +828,93 @@ namespace ShareDrawing.HttpClient.Http
             }
         }
 
-        public static async Task<T> HttpPutJsonAsync<T>(
-            string url,
-            string json,
-            CookieCollection cookies,
-            NameValueCollection headers,
-            string userAgent,
-            int timeout,
-            string token
-        )
-        {
-            var data = Encoding.UTF8.GetBytes(json);
-
-            var resultJson = await HttpMethodAsync(url, data, cookies, headers, userAgent, timeout, token,
-                "application/json",
-                "Put");
-            return ParesJson<T>(resultJson);
-        }
-
         #endregion
 
 
         #region delete
 
         public static async Task HttpDeleteAsync(
-            string url,
-            string token
+            string                    url,
+            string                    token,
+            bool                      debug    = true,
+            [CallerMemberName] string funcName = ""
         )
         {
-            var startDateTime = DateTime.Now;
+            await HttpDeleteAsync<object>(url, token, debug, funcName);
+        }
+
+        public static async Task<T> HttpDeleteAsync<T>(
+            string                    url,
+            string                    token,
+            bool                      debug    = true,
+            [CallerMemberName] string funcName = ""
+        )
+        {
+            var    startDateTime = DateTime.Now;
             string resultJson;
 
             try
             {
-                resultJson = await HttpMethodAsync(url, null, null, null, null, 300000, token,
-                    "application/x-www-form-urlencoded",
-                    "DELETE");
+                resultJson = await GetHttpResponseTextAsync(url, null, null, null, null, 300000, token,
+                                                            "application/x-www-form-urlencoded",
+                                                            "DELETE");
 
-                ParesJson<object>(resultJson);
 
+#if DEBUG
                 var timeSpan = DateTime.Now - startDateTime;
-                if (CanDebug)
+                if (CanDebug && debug)
                     Debug.Print(
-                        $"{Environment.NewLine}HttpDelete请求成功:耗时:{timeSpan.TotalMilliseconds}{Environment.NewLine}{Environment.NewLine}Url:{url}{Environment.NewLine}返回json是{Environment.NewLine}{resultJson}{Environment.NewLine}");
+                        $"{Environment.NewLine}HttpDeleteAsync请求成功: 耗时:{timeSpan.TotalMilliseconds}    funcName:{funcName}{Environment.NewLine}Url:{url}{Environment.NewLine}Token:{token}{Environment.NewLine}返回json是{Environment.NewLine}{resultJson}{Environment.NewLine}");
+#endif
             }
             catch (Exception exception)
             {
+#if DEBUG
                 var timeSpan = DateTime.Now - startDateTime;
                 if (CanDebug)
                     Debug.Print(
-                        $"{Environment.NewLine}HttpDelete请求失败: 耗时:{timeSpan.TotalMilliseconds}{Environment.NewLine}Url:{url}{Environment.NewLine}Token:{token}{Environment.NewLine}错误信息是{Environment.NewLine}{exception.Message}{Environment.NewLine}");
-
+                        $"{Environment.NewLine}HttpDeleteAsync请求失败: 耗时:{timeSpan.TotalMilliseconds}    funcName:{funcName}{Environment.NewLine}Url:{url}{Environment.NewLine}Token:{token}{Environment.NewLine}错误信息是{Environment.NewLine}{exception.Message}{Environment.NewLine}");
+#endif
                 throw;
             }
+
+            return ParesJson<T>(resultJson);
         }
 
         #endregion
 
+
+        /// <summary>
+        /// 将参数集合平铺为字符串
+        /// </summary>
+        /// <param name="params"></param>
+        /// <returns></returns>
+        private static string GetParamsString(NameValueCollection @params)
+        {
+            var stringBuilder = new StringBuilder();
+
+            var paramsString = string.Empty;
+            if (@params is {Count: > 0})
+            {
+                var isFirst = true;
+
+                foreach (string key in @params.Keys)
+                {
+                    stringBuilder.AppendFormat(
+                        isFirst ? "?{0}={1}" : "&{0}={1}",
+                        key,
+                        @params[key]);
+                    isFirst = false;
+                }
+            }
+
+            if (stringBuilder.Length > 0)
+            {
+                paramsString = stringBuilder.ToString();
+            }
+
+            return paramsString;
+        }
 
         /// <summary>
         /// 将名称与值的数据集转换为字节数组(UTF8编码)
@@ -1748,7 +923,7 @@ namespace ShareDrawing.HttpClient.Http
         /// <returns></returns>
         private static byte[] GetRequestBytes(NameValueCollection dicPostParameters)
         {
-            if (dicPostParameters == null || dicPostParameters.Count == 0)
+            if (dicPostParameters.Count == 0)
             {
                 return Array.Empty<byte>();
             }
@@ -1800,7 +975,7 @@ namespace ShareDrawing.HttpClient.Http
 
             if (httpResponseBase.Code == 200)
             {
-                HttpResponseObject<T> httpResponseObject;
+                HttpResponseObject<T>? httpResponseObject;
 
                 try
                 {
@@ -1833,23 +1008,21 @@ namespace ShareDrawing.HttpClient.Http
             throw new HttpException(httpResponseBase.Message, httpResponseBase.Code);
         }
 
-        private static string HttpMethod(
-            string url,
-            byte[] data,
-            CookieCollection cookies,
-            NameValueCollection headers,
-            string userAgent,
-            int timeout,
-            string token,
-            string contentType,
-            string methodName
+        private static async Task<string> GetHttpResponseTextAsync(
+            string               url,
+            byte[]?              data,
+            CookieCollection?    cookies,
+            NameValueCollection? headers,
+            string?              userAgent,
+            int                  timeout,
+            string               token,
+            string               contentType,
+            string               methodName
         )
         {
             if (string.IsNullOrWhiteSpace(url)) throw new ArgumentNullException(nameof(url));
 
-            var result = string.Empty;
-
-            HttpWebRequest request = null;
+            HttpWebRequest? request = null;
 
             try
             {
@@ -1867,92 +1040,15 @@ namespace ShareDrawing.HttpClient.Http
                     request.Headers.Add(HttpRequestHeader.Authorization, token);
                 }
 
-                if (data is {Length: > 0})
+                if (DefaultHeaders is {Count: > 0})
                 {
-                    using var dataStream = request.GetRequestStream();
-                    dataStream.Write(data, 0, data.Length);
-                }
-
-                var response = request.GetResponse() as HttpWebResponse;
-
-                if (response == null)
-                {
-                    throw new HttpException(
-                        "网络异常,请稍后再试.",
-                        $"接口调用异常,服务器没有响应.{Environment.NewLine}url:{url}{Environment.NewLine}"
-                    );
-                }
-
-
-                //发送请求,并得到回复
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    using var stream = response.GetResponseStream();
-                    if (stream != null)
+                    foreach (string key in DefaultHeaders.Keys)
                     {
-                        using var reader = new StreamReader(stream, Encoding.UTF8);
-                        result = reader.ReadToEnd();
+                        if (!string.IsNullOrWhiteSpace(key))
+                        {
+                            request.Headers.Add(key, DefaultHeaders[key]);
+                        }
                     }
-                }
-                else
-                {
-                    throw new HttpException(
-                        "网络异常,请稍后再试.",
-                        $"接口调用异常{Environment.NewLine}url:{url}{Environment.NewLine}",
-                        response.StatusCode
-                    );
-                }
-            }
-            catch (WebException webException)
-            {
-                if (webException.Response is HttpWebResponse {StatusCode: HttpStatusCode.Unauthorized})
-                {
-                    UnauthorizedCall?.Invoke(null, token);
-                }
-
-                throw;
-            }
-            finally
-            {
-                request?.Abort();
-            }
-
-            return result;
-        }
-
-
-        private static async Task<string> HttpMethodAsync(
-            string url,
-            byte[] data,
-            CookieCollection cookies,
-            NameValueCollection headers,
-            string userAgent,
-            int timeout,
-            string token,
-            string contentType,
-            string methodName
-        )
-        {
-            if (string.IsNullOrWhiteSpace(url)) throw new ArgumentNullException(nameof(url));
-
-            var result = string.Empty;
-
-            HttpWebRequest request = null;
-
-            try
-            {
-                request = HttpWebRequestFactory.CreateHttpWebRequest(
-                    url,
-                    methodName,
-                    contentType,
-                    headers,
-                    timeout,
-                    userAgent,
-                    cookies);
-
-                if (!string.IsNullOrWhiteSpace(token))
-                {
-                    request.Headers.Add(HttpRequestHeader.Authorization, token);
                 }
 
                 if (data is {Length: > 0})
@@ -1960,7 +1056,6 @@ namespace ShareDrawing.HttpClient.Http
                     using var dataStream = await request.GetRequestStreamAsync();
                     await dataStream.WriteAsync(data, 0, data.Length);
                 }
-
 
                 if (await request.GetResponseAsync() is not HttpWebResponse response)
                 {
@@ -1974,11 +1069,16 @@ namespace ShareDrawing.HttpClient.Http
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
                     using var stream = response.GetResponseStream();
-                    if (stream != null)
+                    if (stream == null)
                     {
-                        using var reader = new StreamReader(stream, Encoding.UTF8);
-                        result = await reader.ReadToEndAsync();
+                        throw new HttpException(
+                            "网络异常,请稍后再试.",
+                            $"接口调用异常,没有返回数据流.{Environment.NewLine}url:{url}{Environment.NewLine}"
+                        );
                     }
+
+                    using var reader = new StreamReader(stream, Encoding.UTF8);
+                    return await reader.ReadToEndAsync();
                 }
                 else
                 {
@@ -1993,6 +1093,15 @@ namespace ShareDrawing.HttpClient.Http
             {
                 if (webException.Response is null)
                 {
+                    ////if (webException.InnerException is SocketException se)
+                    ////{
+                    ////    if (se.SocketErrorCode==SocketError.HostUnreachable)
+                    ////    {
+
+
+                    ////    }
+                    ////}
+
                     throw;
                 }
 
@@ -2005,25 +1114,41 @@ namespace ShareDrawing.HttpClient.Http
                 using var stream = webException.Response.GetResponseStream();
                 if (stream != null)
                 {
-                    using var reader = new StreamReader(stream, Encoding.UTF8);
-                    var responseJson = await reader.ReadToEndAsync();
+                    using var reader       = new StreamReader(stream, Encoding.UTF8);
+                    var       responseJson = await reader.ReadToEndAsync();
 
-                    var httpResponseBase = JsonConvert.DeserializeObject<HttpResponseBase>(responseJson);
+                    HttpResponseBase? httpResponseBase = null;
+                    try
+                    {
+                        httpResponseBase = JsonConvert.DeserializeObject<HttpResponseBase>(responseJson);
+                    }
+                    catch (Exception e)
+                    {
+                    }
 
                     if (httpResponseBase is not null)
                     {
-                        throw new HttpException(httpResponseBase.Message, httpResponseBase.Code);
+                        throw new HttpException(
+                            string.IsNullOrWhiteSpace(httpResponseBase.Message)
+                                ? webException.Message
+                                : httpResponseBase.Message,
+                            httpResponseBase.Code,
+                            webException
+                        );
+                    }
+                    else
+                    {
+                        throw;
                     }
                 }
-                else
-                {
-                    throw webException;
-                }
-
 
                 throw;
             }
-
+            catch (System.UriFormatException ex)
+            {
+                //方便断点调试
+                throw new System.UriFormatException($"{ex.Message}\r\n{url}", ex);
+            }
             catch (Exception ex)
             {
                 //方便断点调试
@@ -2033,8 +1158,6 @@ namespace ShareDrawing.HttpClient.Http
             {
                 request?.Abort();
             }
-
-            return result;
         }
     }
 }

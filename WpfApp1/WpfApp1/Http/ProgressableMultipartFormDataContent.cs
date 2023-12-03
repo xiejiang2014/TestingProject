@@ -4,95 +4,89 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace ShareDrawing.HttpClient.Http
+namespace WpfApp1.Http;
+//参考 https://stackoverflow.com/questions/41378457/c-httpclient-file-upload-progress-when-uploading-multiple-file-as-multipartfo
+
+public class ProgressableStreamContent : HttpContent
 {
-    //参考 https://stackoverflow.com/questions/41378457/c-httpclient-file-upload-progress-when-uploading-multiple-file-as-multipartfo
+    /// <summary>
+    /// Lets keep buffer of 20kb
+    /// </summary>
+    private const int DefaultBufferSize = 5 * 4096;
 
-    public class ProgressableStreamContent : HttpContent
+    private readonly HttpContent _content;
+
+    private readonly int _bufferSize;
+
+    //private bool contentConsumed;
+    public Action<long, long>? Progress { get; set; }
+
+
+    public ProgressableStreamContent(HttpContent content, int bufferSize = DefaultBufferSize)
     {
-        /// <summary>
-        /// Lets keep buffer of 20kb
-        /// </summary>
-        private const int defaultBufferSize = 5 * 4096;
-
-        private HttpContent content;
-
-        private int bufferSize;
-
-        //private bool contentConsumed;
-        public Action<long, long> Progress { get; set; }
-
-        public ProgressableStreamContent(HttpContent content) : this(content, defaultBufferSize)
+        if (bufferSize <= 0)
         {
+            throw new ArgumentOutOfRangeException(nameof(bufferSize));
         }
 
+        this._content    = content ?? throw new ArgumentNullException(nameof(content));
+        this._bufferSize = bufferSize;
 
-        public ProgressableStreamContent(HttpContent content, int bufferSize)
+        foreach (var h in content.Headers)
         {
-            if (bufferSize <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(bufferSize));
-            }
-
-            this.content = content ?? throw new ArgumentNullException(nameof(content));
-            this.bufferSize = bufferSize;
-
-            foreach (var h in content.Headers)
-            {
-                this.Headers.Add(h.Key, h.Value);
-            }
+            this.Headers.Add(h.Key, h.Value);
         }
+    }
 
-        protected override Task SerializeToStreamAsync(Stream stream, TransportContext context)
+    protected override Task SerializeToStreamAsync(Stream stream, TransportContext? context)
+    {
+        return Task.Run(async () =>
         {
-            return Task.Run(async () =>
+            var buffer = new byte[_bufferSize];
+            TryComputeLength(out var size);
+            var uploaded = 0;
+
+            await using var streamAsync = await _content.ReadAsStreamAsync();
+
+            while (true)
             {
-                var buffer = new byte[bufferSize];
-                TryComputeLength(out var size);
-                var uploaded = 0;
+                //实测此处得到的 length 和 size 会不准, 特别是在发送小文件时.
+                var length = await streamAsync.ReadAsync(buffer, 0, buffer.Length);
+                if (length <= 0) break;
 
-                using var streamAsync = await content.ReadAsStreamAsync();
+                uploaded += length;
+                Progress?.Invoke(uploaded, size);
 
-                while (true)
+                //System.Diagnostics.Debug.WriteLine($"Bytes sent {uploaded} of {size}");
+                try
                 {
-                    //实测此处得到的 length 和 size 会不准, 特别是在发送小文件时.
-                    var length = await streamAsync.ReadAsync(buffer, 0, buffer.Length);
-                    if (length <= 0) break;
-
-                    uploaded += length;
-                    Progress?.Invoke(uploaded, size);
-
-                    //System.Diagnostics.Debug.WriteLine($"Bytes sent {uploaded} of {size}");
-                    try
-                    {
-                        // 取消上传时，这里会报ObjectDisposedException异常（可能是stream在线程外被Dispose）
-                        await stream.WriteAsync(buffer, 0, length);
-                        await stream.FlushAsync();
-                    }
-                    catch(ObjectDisposedException)
-                    {
-                        return;
-                    }
+                    // 取消上传时，这里会报ObjectDisposedException异常（可能是stream在线程外被Dispose）
+                    await stream.WriteAsync(buffer, 0, length);
+                    await stream.FlushAsync();
                 }
-
-                await stream.FlushAsync();
-            });
-        }
-
-        protected override bool TryComputeLength(out long length)
-        {
-            length = content.Headers.ContentLength.GetValueOrDefault();
-            return true;
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                content.Dispose();
+                catch (ObjectDisposedException)
+                {
+                    return;
+                }
             }
 
-            base.Dispose(disposing);
+            await stream.FlushAsync();
+        });
+    }
+
+    protected override bool TryComputeLength(out long length)
+    {
+        length = _content.Headers.ContentLength.GetValueOrDefault();
+        return true;
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _content.Dispose();
         }
+
+        base.Dispose(disposing);
     }
 }

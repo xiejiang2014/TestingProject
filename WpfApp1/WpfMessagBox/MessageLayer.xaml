@@ -1,0 +1,68 @@
+﻿<UserControl
+    x:Class="WpfMessagBox.MessageLayer"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:valueConverter="clr-namespace:WpfMessagBox.ValueConverter"
+    xmlns:wpfMessagBox="clr-namespace:WpfMessagBox"
+    x:Name="ThisMessageLayer"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    DataContext="{Binding RelativeSource={RelativeSource Self},
+                          Path=MessageBoxViewModel}"
+    Loaded="MessageLayer_OnLoaded"
+    MouseLeftButtonDown="MessageLayer_OnMouseLeftButtonDown"
+    PreviewMouseLeftButtonDown="MessageLayer_OnPreviewMouseLeftButtonDown"
+    mc:Ignorable="d">
+
+    <!--  各种对话框的模版  -->
+    <UserControl.Resources>
+        <wpfMessagBox:MessageContentTemplateSelector x:Key="MessageContentTemplateSelector" />
+
+        <!--  在后台被模版选择器调用  -->
+        <!--  ReSharper disable once Xaml.RedundantResource  -->
+        <DataTemplate x:Key="WaitingMessageTemplate">
+            <wpfMessagBox:WaitingBox />
+        </DataTemplate>
+
+        <!--  在后台被模版选择器调用  -->
+        <!--  ReSharper disable once Xaml.RedundantResource  -->
+        <DataTemplate x:Key="TextMessageTemplate">
+            <wpfMessagBox:TextMessageBox />
+        </DataTemplate>
+
+        <!--  在后台被模版选择器调用  -->
+        <!--  ReSharper disable once Xaml.RedundantResource  -->
+        <DataTemplate x:Key="CustomizeTemplate">
+            <wpfMessagBox:CustomizeMessageBox />
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <Grid>
+
+        <!--  遮罩  -->
+        <Rectangle
+            x:Name="Mask"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            Fill="{Binding Path=MaskBrush}"
+            MouseLeftButtonDown="MessageLayer_OnMouseLeftButtonDown"
+            PreviewMouseLeftButtonDown="MessageLayer_OnPreviewMouseLeftButtonDown"
+            Visibility="{Binding Path=IsMaskVisible,
+                                 Converter={x:Static valueConverter:BoolToVisibilityConverter.Default}}" />
+
+
+        <!--  对话框内容区, 内容为MessageBoxViewModel 显示模版由 MessageContentTemplateSelector决定  -->
+        <ContentControl
+            x:Name="MessageLayerRootContentControl"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            Content="{Binding}"
+            ContentTemplateSelector="{StaticResource MessageContentTemplateSelector}"
+            DataContext="{Binding ElementName=ThisMessageLayer,
+                                  Path=MessageBoxViewModel}"
+            MouseLeftButtonDown="MessageLayerRootContentControl_OnMouseLeftButtonDown" />
+    </Grid>
+
+</UserControl>

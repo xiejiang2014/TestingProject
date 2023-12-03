@@ -4,7 +4,7 @@ using System.Net;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 
-namespace ShareDrawing.HttpClient.Http
+namespace WpfApp1.Http
 {
     internal static class HttpWebRequestFactory
     {
@@ -20,13 +20,13 @@ namespace ShareDrawing.HttpClient.Http
         }
 
         public static HttpWebRequest CreateHttpWebRequest(
-            string              url,
-            string              httpMethod,
-            string              contentType,
-            NameValueCollection headers   = null,
-            int                 timeout   = 30000,
-            string              userAgent = "",
-            CookieCollection    cookies   = null
+            string               url,
+            string               httpMethod,
+            string               contentType,
+            NameValueCollection? headers   = null,
+            int                  timeout   = 30000,
+            string?              userAgent = "",
+            CookieCollection?    cookies   = null
         )
         {
             HttpWebRequest request;
@@ -44,6 +44,7 @@ namespace ShareDrawing.HttpClient.Http
                 request = (HttpWebRequest) WebRequest.Create(url);
             }
 
+            request.KeepAlive = false;
             request.Method      = httpMethod;
             request.ContentType = contentType;
 
@@ -58,7 +59,7 @@ namespace ShareDrawing.HttpClient.Http
                 request.UserAgent = userAgent;
             }
 
-            request.Timeout = timeout;
+            request.Timeout   = timeout;
 
             if (cookies != null)
             {
@@ -66,13 +67,14 @@ namespace ShareDrawing.HttpClient.Http
                 request.CookieContainer.Add(cookies);
             }
 
-            if (headers == null || headers.Count <= 0) return request;
-
-            foreach (string key in headers.Keys)
+            if (headers is {Count: > 0})
             {
-                if (!string.IsNullOrWhiteSpace(key))
+                foreach (string key in headers.Keys)
                 {
-                    request.Headers.Add(key, headers[key]);
+                    if (!string.IsNullOrWhiteSpace(key))
+                    {
+                        request.Headers.Add(key, headers[key]);
+                    }
                 }
             }
 

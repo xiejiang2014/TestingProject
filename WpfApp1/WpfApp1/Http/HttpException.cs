@@ -1,74 +1,82 @@
 ﻿using System;
 using System.Net;
 
-namespace ShareDrawing.HttpClient.Http
+namespace WpfApp1.Http;
+
+/// <summary>
+/// 包含友好提示信息的异常
+/// </summary>
+public sealed class HttpException : ApplicationException
 {
     /// <summary>
-    /// 包含友好提示信息的异常
+    /// 不希望用户看到的异常信息
     /// </summary>
-    public class HttpException : ApplicationException
+    public string LogMessage { get; set; }
+
+    public int Code { get; set; }
+
+
+    public HttpStatusCode StatusCode { get; set; }
+
+    public HttpException()
     {
-        /// <summary>
-        /// 不希望用户看到的异常信息
-        /// </summary>
-        public string LogMessage { get; set; }
+        LogMessage = "创建 HttpException 没有指定 Message";
+    }
 
-        public int Code { get; set; }
+    public HttpException(string message,
+                         int    code,
+                         string logMessage
+    ) : this(message, logMessage)
+    {
+        Code = code;
+    }
 
+    public HttpException(string message,
+                         string logMessage
+    ) : base(message)
+    {
+        LogMessage = logMessage;
+    }
 
-        public HttpStatusCode StatusCode { get; set; }
-        public HttpException()
-        {
-            LogMessage = "创建 HttpException 没有指定 Message";
-        }
+    public HttpException(string         message,
+                         string         logMessage,
+                         HttpStatusCode statusCode
+    ) : base(message)
+    {
+        LogMessage = logMessage;
+        StatusCode = statusCode;
+    }
 
-        public HttpException(string message,
-                                        int    code,
-                                        string logMessage
-        ) : this(message, logMessage)
-        {
+    public HttpException(string message,
+                         int    code
+    ) : base(message)
+    {
+        Code = code;
+    }
 
-            Code = code;
-        }
+    public HttpException(string    message,
+                         int       code,
+                         Exception exception
+    ) : base(message, exception)
+    {
+        Code = code;
+    }
 
-        public HttpException(string message,
-                                        string logMessage
-        ) : base(message)
-        {
-            LogMessage = logMessage;
-        }
-        public HttpException(string message,
-                                        string logMessage, 
-                                        HttpStatusCode statusCode
-        ) : base(message)
-        {
-            LogMessage = logMessage;
-            StatusCode = statusCode;
-        }
+    public HttpException(string message) : base(message)
+    {
+    }
 
-        public HttpException(string message,
-                                        int    code
-        ) : base(message)
-        {
-            Code = code;
-        }
+    public HttpException(string    message,
+                         string    logMessage,
+                         Exception innerException
+    ) : base(message, innerException)
+    {
+        LogMessage = logMessage;
+    }
 
-        public HttpException(string message) : base(message)
-        {
-        }
-
-        public HttpException(string    message,
-                                        string    logMessage,
-                                        Exception innerException
-        ) : base(message, innerException)
-        {
-            LogMessage = logMessage;
-        }
-
-        public HttpException(string    message,
-                                        Exception innerException
-        ) : base(message, innerException)
-        {
-        }
+    public HttpException(string    message,
+                         Exception innerException
+    ) : base(message, innerException)
+    {
     }
 }

@@ -1,8 +1,0 @@
-<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-    <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="/ShareDrawing.Tools;component/MessageBox/Styles/CustomizeWithButtonMessageBoxStyles.xaml" />
-        <ResourceDictionary Source="/ShareDrawing.Tools;component/MessageBox/Styles/TextMessageBoxStyles.xaml" />
-        <ResourceDictionary Source="/ShareDrawing.Tools;component/MessageBox/Styles/WaitingBoxStyles.xaml" />
-        <ResourceDictionary Source="/ShareDrawing.Tools;component/MessageBox/Styles/WindowTextMessageBoxStyles.xaml" />
-    </ResourceDictionary.MergedDictionaries>
-</ResourceDictionary>
