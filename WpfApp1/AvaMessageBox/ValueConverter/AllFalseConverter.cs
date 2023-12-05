@@ -14,7 +14,7 @@ public class AllFalseConverter : IMultiValueConverter
         _default ??= new AllFalseConverter();
 
 
-    public object? Convert(IList<object?> values, Type targetType, object? parameter, CultureInfo culture)
+    public object Convert(IList<object?> values, Type targetType, object? parameter, CultureInfo culture)
     {
         return values.All(v => v is false);
     }

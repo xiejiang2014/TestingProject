@@ -1,7 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Threading;
 using PropertyChanged;
@@ -248,9 +247,9 @@ public partial class MessageBoxManager : UserControl
             throw new ArgumentNullException(nameof(messageBoxViewModel));
         }
 
-        if (!Dispatcher.CheckAccess())
+        if (!Dispatcher.UIThread.CheckAccess())
         {
-            Dispatcher.Invoke(() => ShowMessageBox(messageBoxViewModel));
+            Dispatcher.UIThread.Invoke(() => ShowMessageBox(messageBoxViewModel));
             return;
         }
 
@@ -263,19 +262,13 @@ public partial class MessageBoxManager : UserControl
             {
                 var background = messageBoxViewModel.MessageBoxType switch
                                  {
-                                     MessageBoxTypes.Waiting =>
-                                         Application.Current?.TryFindResource("WaitingMessageBackground"),
-
-                                     MessageBoxTypes.TextMessage =>
-                                         Application.Current?.TryFindResource("TextMessageBackground"),
-
-                                     MessageBoxTypes.Customize =>
-                                         Application.Current?.TryFindResource("CustomizeBackground"),
-
+                                     MessageBoxTypes.Waiting     => Application.Current?.FindResource("WaitingMessageBackground"),
+                                     MessageBoxTypes.TextMessage => Application.Current?.FindResource("TextMessageBackground"),
+                                     MessageBoxTypes.Customize   => Application.Current?.FindResource("CustomizeBackground"),
                                      _ => DefaultBackground
                                  } ?? DefaultBackground;
 
-                if (background is Brush brush)
+                if (background is IBrush brush)
                 {
                     messageBoxViewModel.MaskBrush = brush;
                 }
@@ -298,9 +291,9 @@ public partial class MessageBoxManager : UserControl
 
     public void HideAllMessageBoxes()
     {
-        if (!Dispatcher.CheckAccess())
+        if (!Dispatcher.UIThread.CheckAccess())
         {
-            Dispatcher.Invoke(HideAllMessageBoxes);
+            Dispatcher.UIThread.Invoke(HideAllMessageBoxes);
             return;
         }
 
@@ -316,9 +309,9 @@ public partial class MessageBoxManager : UserControl
     /// <param name="messageBoxViewModel"></param>
     public void HideMessageBox(MessageBoxViewModel messageBoxViewModel)
     {
-        if (!Dispatcher.CheckAccess())
+        if (!Dispatcher.UIThread.CheckAccess())
         {
-            Dispatcher.Invoke(() => HideMessageBox(messageBoxViewModel));
+            Dispatcher.UIThread.Invoke(() => HideMessageBox(messageBoxViewModel));
             return;
         }
 
@@ -334,9 +327,9 @@ public partial class MessageBoxManager : UserControl
     /// <param name="messageBoxViewModel"></param>
     public void DisplayMessageBox(MessageBoxViewModel messageBoxViewModel)
     {
-        if (!Dispatcher.CheckAccess())
+        if (!Dispatcher.UIThread.CheckAccess())
         {
-            Dispatcher.Invoke(() => DisplayMessageBox(messageBoxViewModel));
+            Dispatcher.UIThread.Invoke(() => DisplayMessageBox(messageBoxViewModel));
             return;
         }
 
@@ -348,9 +341,9 @@ public partial class MessageBoxManager : UserControl
 
     public void DisplayAllMessageBoxes()
     {
-        if (!Dispatcher.CheckAccess())
+        if (!Dispatcher.UIThread.CheckAccess())
         {
-            Dispatcher.Invoke(DisplayAllMessageBoxes);
+            Dispatcher.UIThread.Invoke(DisplayAllMessageBoxes);
             return;
         }
 
@@ -359,24 +352,16 @@ public partial class MessageBoxManager : UserControl
             keyValuePair.Value.IsVisible = true;
         }
     }
-
-
-    public void CloseMessageBoxWidthDefaultClosingAnimation(MessageBoxViewModel messageBoxViewModel)
-    {
-        RunDefaultClosingAnimation(messageBoxViewModel,
-                                   () => CloseMessageBox(messageBoxViewModel)
-                                  );
-    }
-
+    
     /// <summary>
     /// 关闭指定的消息框
     /// </summary>
     /// <param name="messageBoxViewModel"></param>
     public void CloseMessageBox(MessageBoxViewModel messageBoxViewModel)
     {
-        if (!Dispatcher.CheckAccess())
+        if (!Dispatcher.UIThread.CheckAccess())
         {
-            Dispatcher.Invoke(() => CloseMessageBox(messageBoxViewModel));
+            Dispatcher.UIThread.Invoke(() => CloseMessageBox(messageBoxViewModel));
             return;
         }
 
@@ -393,4 +378,5 @@ public partial class MessageBoxManager : UserControl
     {
         return _messageBoxViewModelAndLayerDic.Any() ? _messageBoxViewModelAndLayerDic.Last().Key : null;
     }
+
 }

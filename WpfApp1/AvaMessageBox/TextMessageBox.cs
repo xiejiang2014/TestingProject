@@ -13,16 +13,6 @@ public class TextMessageBox : MessageBoxBase
 {
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
-        //todo 样式
-        //var stylePath = new PropertyPath(nameof(MessageBoxViewModel.Style));
-        //var styleBinding = new Binding()
-        //{
-        //    Path            = stylePath,
-        //    TargetNullValue = FindResource(typeof(TextMessageBox))
-        //};
-
-        //SetBinding(StyleProperty, styleBinding);
-
         //==
 
         if (e.NameScope.Find("PART_Title") is TextBlock textBlock)
@@ -32,9 +22,9 @@ public class TextMessageBox : MessageBoxBase
 
         //==
         
-        if (e.NameScope.Find("PART_MessageTextBlock") is TextBlock messagetextBlock)
+        if (e.NameScope.Find("PART_MessageTextBlock") is TextBlock messageTextBlock)
         {
-            messagetextBlock.Bind(TextBlock.TextProperty, new Binding(nameof(MessageBoxViewModel.Message)));
+            messageTextBlock.Bind(TextBlock.TextProperty, new Binding(nameof(MessageBoxViewModel.Message)));
         }
 
         //==

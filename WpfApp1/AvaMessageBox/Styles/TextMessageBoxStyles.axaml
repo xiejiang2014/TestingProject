@@ -1,0 +1,112 @@
+<Styles
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:avaMessageBox="clr-namespace:AvaMessageBox">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <!--  Add Controls for Previewer Here  -->
+        </Border>
+    </Design.PreviewWith>
+
+    <!--  Add Styles Here  -->
+
+
+    <Style Selector="avaMessageBox|TextMessageBox">
+        <Setter
+            Property="Background"
+            Value="Transparent" />
+
+
+        <Setter Property="Template">
+            <ControlTemplate TargetType="avaMessageBox:TextMessageBox">
+                <Border
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Background="White"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    CornerRadius="6">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+
+                        <!--  标题  -->
+                        <TextBlock
+                            x:Name="PART_Title"
+                            Margin="21,9,0,0"
+                            VerticalAlignment="Top"
+                            FontSize="16"
+                            FontWeight="Bold"
+                            Foreground="#202020" />
+
+
+                        <!--  关闭按钮  -->
+						<Button
+                            Classes="MessageBoxClose"
+                            x:Name="PART_ButtonClose"
+                            Grid.Row="0"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Top"
+                            Cursor="Hand" />
+
+
+                        <!--  消息和按钮区  -->
+                        <Grid
+                            Grid.Row="1"
+                            MinWidth="160"
+                            MaxWidth="600"
+                            Margin="68,20,68,20"
+                            ShowGridLines="False">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <!--  消息  -->
+                            <TextBlock
+                                x:Name="PART_MessageTextBlock"
+                                Grid.Row="0"
+                                Margin="0,20"
+                                HorizontalAlignment="Center"
+                                FontSize="14"
+                                TextWrapping="WrapWithOverflow" />
+
+                            <ItemsControl
+                                x:Name="PART_ButtonsControl"
+                                Grid.Row="1"
+                                HorizontalAlignment="Center"
+                                IsVisible="{Binding ElementName=PART_ButtonsControl,
+                                                    Path=!Items.Count}">
+
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Horizontal" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="{x:Type avaMessageBox:ButtonBehavior}">
+
+                                        <Button
+                                            Classes="MessageBox"
+                                            Classes.IsDefault="{Binding Path=IsDefault}"
+                                            Content="{Binding Path=ButtonContent}"
+                                            IsDefault="{Binding Path=IsDefault}"
+                                            IsEnabled="{Binding Path=CanExecute}" />
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+
+                            </ItemsControl>
+
+
+                        </Grid>
+                    </Grid>
+                </Border>
+
+            </ControlTemplate>
+        </Setter>
+    </Style>
+</Styles>

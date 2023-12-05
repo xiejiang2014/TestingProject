@@ -4,8 +4,8 @@
     <Nullable>enable</Nullable>
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-    <AssemblyVersion>1.0.23337.1702</AssemblyVersion>
-    <FileVersion>1.0.23337.1702</FileVersion>
+    <AssemblyVersion>1.0.23339.0853</AssemblyVersion>
+    <FileVersion>1.0.23339.0853</FileVersion>
   </PropertyGroup>
 
 
@@ -23,5 +23,10 @@
     </PackageReference>
     <PackageReference PrivateAssets="All" Include="PropertyChanged.Fody" Version="4.1.0" />
 
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Styles\ButtonStyles.axaml" />
   </ItemGroup>
 </Project>

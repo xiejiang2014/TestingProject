@@ -8,7 +8,6 @@ using Avalonia;
 using Avalonia.Controls.Primitives;
 using Avalonia.Layout;
 using Avalonia.Media;
-using Avalonia.Styling;
 
 namespace AvaMessageBox;
 
@@ -27,7 +26,7 @@ public class MessageBoxViewModel : INotifyPropertyChanged
 
     public bool IsMaskVisible { get; set; } = true;
 
-    public Brush? MaskBrush { get; set; }
+    public IBrush? MaskBrush { get; set; }
 
     public string? Title { get; set; }
 
@@ -89,12 +88,6 @@ public class MessageBoxViewModel : INotifyPropertyChanged
         Padding = DefaultPadding;
     }
 
-    #region 样式
-
-    //todo 样式
-    public Style? Style { get; set; }
-
-    #endregion
 
     #region 布局
 

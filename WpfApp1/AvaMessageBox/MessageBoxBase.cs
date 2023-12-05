@@ -39,19 +39,8 @@ public class MessageBoxBase : TemplatedControl
 
             BindVisibilityForButton(ButtonClose, MessageBoxViewModel?.CloseButtonBehavior);
 
-            //todo 按钮的class应该绑定到 MessageBoxViewModel 的 class 上
-            //ButtonClose.SetBinding(StyleProperty,
-            //                       new Binding()
-            //                       {
-            //                           Source = MessageBoxViewModel?.CloseButtonBehavior,
-            //                           Path   = new PropertyPath(nameof(ButtonBehavior.Style))
-            //                       });
-
-
-            ButtonClose.Bind(ContentControl.ContentProperty, new Binding(nameof(ButtonBehavior.ButtonContent)));
-
-
-            ButtonClose.Bind(ContentControl.IsEnabledProperty, new Binding(nameof(ButtonBehavior.CanExecute)));
+            ButtonClose.Bind(ContentControl.ContentProperty,   new Binding(nameof(ButtonBehavior.ButtonContent)) { Source = MessageBoxViewModel?.CloseButtonBehavior });
+            ButtonClose.Bind(ContentControl.IsEnabledProperty, new Binding(nameof(ButtonBehavior.CanExecute)) { Source    = MessageBoxViewModel?.CloseButtonBehavior });
         }
 
 
@@ -66,8 +55,8 @@ public class MessageBoxBase : TemplatedControl
         multiBinding.Bindings.Add(
                                   new Binding() //action 为空时隐藏  
                                   {
-                                      Source    = buttonBehavior,
-                                      Path      = "ClickAction",
+                                      Source = buttonBehavior,
+                                      Path   = nameof(ButtonBehavior.ClickAction),
                                       Converter = ObjectConverters.IsNull
                                   }
                                  );
@@ -77,7 +66,7 @@ public class MessageBoxBase : TemplatedControl
                                   new Binding() //ForceHidden==true 时隐藏  
                                   {
                                       Source = buttonBehavior,
-                                      Path   = "ForceHidden",
+                                      Path   = nameof(ButtonBehavior.ForceHidden),
                                   }
                                  );
 

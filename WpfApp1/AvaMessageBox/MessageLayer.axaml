@@ -1,8 +1,55 @@
-<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="AvaMessageBox.MessageLayer">
-  Welcome to Avalonia!
+<UserControl
+    x:Class="AvaMessageBox.MessageLayer"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:avaMessageBox="clr-namespace:AvaMessageBox"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    x:Name="ThisMessageLayer"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    x:DataType="avaMessageBox:MessageBoxViewModel"
+    Loaded="Control_OnLoaded"
+    mc:Ignorable="d">
+
+    <Grid>
+
+        <!--  遮罩  -->
+        <Rectangle
+            x:Name="Mask"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            Fill="{Binding Path=MaskBrush}"
+            IsVisible="{Binding Path=IsMaskVisible}"
+            PointerPressed="Mask_OnPointerPressed" />
+
+
+        <!--  对话框内容区, 内容为MessageBoxViewModel 显示模版由 MessageContentTemplateSelector决定  -->
+        <ContentControl
+            x:Name="MessageLayerRootContentControl"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            Content="{Binding}"
+            PointerPressed="MessageLayerRootContentControl_OnPointerPressed">
+            <ContentControl.DataTemplates>
+                <avaMessageBox:MessageContentTemplateSelector>
+                    <!--  在后台被模版选择器调用  -->
+                    <DataTemplate x:Key="WaitingMessageTemplate">
+                        <avaMessageBox:WaitingBox />
+                    </DataTemplate>
+
+                    <!--  在后台被模版选择器调用  -->
+                    <DataTemplate x:Key="TextMessageTemplate">
+                        <avaMessageBox:TextMessageBox />
+                    </DataTemplate>
+
+                    <!--  在后台被模版选择器调用  -->
+                    <DataTemplate x:Key="CustomizeTemplate">
+                        <avaMessageBox:CustomizeMessageBox />
+                    </DataTemplate>
+                </avaMessageBox:MessageContentTemplateSelector>
+            </ContentControl.DataTemplates>
+
+        </ContentControl>
+    </Grid>
 </UserControl>

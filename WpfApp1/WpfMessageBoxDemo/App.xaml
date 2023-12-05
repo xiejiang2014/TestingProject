@@ -6,16 +6,20 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/WpfMessagBox;component/Styles/MessageBoxStyles.xaml" />
-				<ResourceDictionary Source="/CustomizeMessageBoxStylesXXX.xaml"/>
+                <ResourceDictionary Source="/WpfMessageBox;component/Styles/MessageBoxStyles.xaml" />
+                <ResourceDictionary Source="/CustomizeMessageBoxStylesXXX.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
 
             <Style
                 x:Key="ExtButtonStyle"
                 TargetType="ButtonBase">
-                <Setter Property="FontSize" Value="18" />
-                <Setter Property="Foreground" Value="Red" />
+                <Setter
+                    Property="FontSize"
+                    Value="18" />
+                <Setter
+                    Property="Foreground"
+                    Value="Red" />
             </Style>
 
         </ResourceDictionary>

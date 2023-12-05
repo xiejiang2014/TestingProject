@@ -1,17 +1,11 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using Avalonia.Styling;
 
 namespace AvaMessageBox;
 
 public class ButtonBehavior : INotifyPropertyChanged
 {
-    public ButtonBehavior()
-    {
-
-    }
-
     public bool ForceHidden { get; set; }
 
     public bool IsDefault   { get; set; }
@@ -22,9 +16,6 @@ public class ButtonBehavior : INotifyPropertyChanged
 
     public bool CanExecute { get; set; } = true;
     
-    //todo 应该用 class 伪类替代
-    public Style? Style { get; set; }
-
     #region PropertyChanged
 
     public event PropertyChangedEventHandler? PropertyChanged;

@@ -6,8 +6,8 @@
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-    <AssemblyVersion>1.0.23337.1702</AssemblyVersion>
-    <FileVersion>1.0.23337.1702</FileVersion>
+    <AssemblyVersion>1.0.23339.0853</AssemblyVersion>
+    <FileVersion>1.0.23339.0853</FileVersion>
   </PropertyGroup>
 
 

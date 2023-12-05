@@ -83,7 +83,6 @@
                                                 Style="{Binding Path=Style}" />
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
-
                                 </ItemsControl>
 
                             </Grid>
