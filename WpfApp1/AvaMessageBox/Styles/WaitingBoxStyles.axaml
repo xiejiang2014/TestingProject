@@ -23,7 +23,7 @@
                     x:Name="WaitingBoxRootBorder"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
-                    Background="White"
+                    Background="{StaticResource SystemControlBackgroundAltMediumLowBrush}"
                     BorderBrush="{TemplateBinding BorderBrush}"
                     BorderThickness="{TemplateBinding BorderThickness}"
                     CornerRadius="4"

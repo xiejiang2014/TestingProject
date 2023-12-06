@@ -22,7 +22,7 @@
                 <Border
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
-                    Background="White"
+                    Background="{StaticResource SystemControlBackgroundAltMediumLowBrush}"
                     BorderBrush="{TemplateBinding BorderBrush}"
                     BorderThickness="{TemplateBinding BorderThickness}"
                     CornerRadius="6">
@@ -39,17 +39,16 @@
                             Margin="21,9,0,0"
                             VerticalAlignment="Top"
                             FontSize="16"
-                            FontWeight="Bold"
-                            Foreground="#202020" />
+                            FontWeight="Bold" />
 
 
                         <!--  关闭按钮  -->
-						<Button
-                            Classes="MessageBoxClose"
+                        <Button
                             x:Name="PART_ButtonClose"
                             Grid.Row="0"
                             HorizontalAlignment="Right"
                             VerticalAlignment="Top"
+                            Classes="MessageBoxClose"
                             Cursor="Hand" />
 
 
