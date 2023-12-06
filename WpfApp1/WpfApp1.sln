@@ -13,9 +13,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WpfMenus", "WpfMenus\WpfMen
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfMenusDemo", "WpfMenusDemo\WpfMenusDemo.csproj", "{DCBDF65E-DDD3-46E2-8B1D-BA254FAA9947}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AvaMessageBox", "AvaMessageBox\AvaMessageBox.csproj", "{826817E8-F973-431A-85D3-F35493A19DD0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AvaMessageBox", "AvaMessageBox\AvaMessageBox.csproj", "{826817E8-F973-431A-85D3-F35493A19DD0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AvaMessageBoxDemo", "AvaMessageBoxDemo\AvaMessageBoxDemo.csproj", "{F17BCDEA-8874-49B5-943F-C7EB118F25DB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AvaMessageBoxDemo", "AvaMessageBoxDemo\AvaMessageBoxDemo.csproj", "{F17BCDEA-8874-49B5-943F-C7EB118F25DB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AvaloniaFluentColors", "AvaloniaFluentColors\AvaloniaFluentColors.csproj", "{A1C45D2B-E87E-46FB-9154-600C5DE11846}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,10 @@ Global
 		{F17BCDEA-8874-49B5-943F-C7EB118F25DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F17BCDEA-8874-49B5-943F-C7EB118F25DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F17BCDEA-8874-49B5-943F-C7EB118F25DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1C45D2B-E87E-46FB-9154-600C5DE11846}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1C45D2B-E87E-46FB-9154-600C5DE11846}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1C45D2B-E87E-46FB-9154-600C5DE11846}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1C45D2B-E87E-46FB-9154-600C5DE11846}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

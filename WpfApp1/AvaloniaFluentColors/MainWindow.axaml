@@ -1,0 +1,35 @@
+<Window
+    x:Class="AvaloniaFluentColors.MainWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:avaloniaFluentColors="clr-namespace:AvaloniaFluentColors"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="AvaloniaFluentColors"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    Background="DeepSkyBlue"
+    mc:Ignorable="d">
+    <ItemsControl x:Name="ColorsList">
+        <ItemsControl.ItemTemplate>
+            <DataTemplate DataType="avaloniaFluentColors:FluentColor">
+                <Grid ColumnDefinitions="*,*,*">
+                    <TextBlock Text="{Binding Path=ColorName}" />
+
+                    <ThemeVariantScope
+                        Grid.Column="1"
+                        RequestedThemeVariant="Light">
+                        <Border Background="{Binding LightColorBrush}" />
+                    </ThemeVariantScope>
+
+
+                    <ThemeVariantScope
+                        Grid.Column="2"
+                        RequestedThemeVariant="Dark">
+                        <Border Background="{Binding DarkColorBrush}" />
+                    </ThemeVariantScope>
+                </Grid>
+            </DataTemplate>
+        </ItemsControl.ItemTemplate>
+    </ItemsControl>
+</Window>
