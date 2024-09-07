@@ -1,10 +1,13 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:messageBox="clr-namespace:WpfMessageBox">
+    xmlns:messageBox="clr-namespace:WpfMessageBox"
+    xmlns:valueConverter="clr-namespace:WpfMessageBox.ValueConverter">
 
     <Style TargetType="{x:Type messageBox:WaitingBox}">
-        <Setter Property="Background" Value="White" />
+        <Setter
+            Property="Background"
+            Value="White" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type messageBox:WaitingBox}">
@@ -28,7 +31,10 @@
                             <ProgressBar
                                 Width="160"
                                 Height="30"
-                                IsIndeterminate="True" />
+                                IsIndeterminate="{Binding Path=(messageBox:MessageBoxViewModel.IsIndeterminate)}"
+                                Visibility="{Binding Path=(messageBox:MessageBoxViewModel.IsProgressVisible),
+                                                     Converter={x:Static valueConverter:BoolToVisibilityConverter.DefaultHidden}}"
+                                Value="{Binding Path=(messageBox:MessageBoxViewModel.Progress)}" />
 
                             <TextBlock
                                 Grid.Row="1"
@@ -52,7 +58,18 @@
                                         <Button
                                             Content="{Binding Path=ButtonContent}"
                                             IsDefault="{Binding Path=IsDefault}"
-                                            Style="{Binding Path=Style}" />
+                                            Style="{Binding Path=Style}">
+
+
+                                            <Button.Visibility>
+                                                <MultiBinding Converter="{x:Static valueConverter:AnyTrueToCollapsedConverter.Default}">
+                                                    <Binding
+                                                        Converter="{x:Static valueConverter:IsNullConverter.Default}"
+                                                        Path="ClickAction" />
+                                                    <Binding Path="ForceHidden" />
+                                                </MultiBinding>
+                                            </Button.Visibility>
+                                        </Button>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
 

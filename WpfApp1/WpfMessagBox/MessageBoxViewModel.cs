@@ -180,6 +180,17 @@ public class MessageBoxViewModel : INotifyPropertyChanged
 
     #endregion
 
+    #region 进度
+
+    public bool IsProgressVisible { get; set; }
+
+    public bool IsIndeterminate { get; set; }
+
+    public double Progress { get; set; }
+
+
+
+    #endregion
     public Task WaitUntilClosed()
     {
         return Task.Run(() =>

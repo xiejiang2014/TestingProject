@@ -4,6 +4,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:messageBox="clr-namespace:WpfMessageBox"
+    xmlns:valueConverter="clr-namespace:WpfMessageBox.ValueConverter"
     mc:Ignorable="d">
 
     <Style TargetType="{x:Type messageBox:CustomizeMessageBox}">
@@ -80,7 +81,19 @@
                                                 Content="{Binding Path=ButtonContent}"
                                                 IsDefault="{Binding Path=IsDefault}"
                                                 IsEnabled="{Binding Path=CanExecute}"
-                                                Style="{Binding Path=Style}" />
+                                                Style="{Binding Path=Style}">
+
+
+                                                <Button.Visibility>
+                                                    <MultiBinding Converter="{x:Static valueConverter:AnyTrueToCollapsedConverter.Default}">
+                                                        <Binding
+                                                            Converter="{x:Static valueConverter:IsNullConverter.Default}"
+                                                            Path="ClickAction" />
+                                                        <Binding Path="ForceHidden" />
+                                                    </MultiBinding>
+                                                </Button.Visibility>
+
+                                            </Button>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
