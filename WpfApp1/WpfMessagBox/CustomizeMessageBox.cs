@@ -42,15 +42,15 @@ public class CustomizeMessageBox : MessageBoxBase
 
         //==
 
-        //if (GetTemplateChild("PART_CustomizeContentControl") is ContentControl contentControl)
-        //{
-        //    var binding = new Binding()
-        //    {
-        //        Path = new PropertyPath(nameof(MessageBoxViewModel.CustomizeContent))
-        //    };
+        if (GetTemplateChild("PART_CustomizeContentControl") is ContentControl contentControl)
+        {
+            var binding = new Binding()
+            {
+                Path = new PropertyPath(nameof(MessageBoxViewModel.CustomizeContent))
+            };
 
-        //    contentControl.SetBinding(ContentControl.ContentProperty, binding);
-        //}
+            contentControl.SetBinding(ContentControl.ContentProperty, binding);
+        }
 
         //==
 

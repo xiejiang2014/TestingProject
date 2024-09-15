@@ -17,6 +17,8 @@ public class ButtonBehavior : INotifyPropertyChanged
 
     public bool ForceHidden { get; set; }
 
+    public bool IsCancel    { get; set; }
+
     public bool IsDefault   { get; set; }
 
     public object? ButtonContent { get; set; }

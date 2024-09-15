@@ -57,6 +57,7 @@
                                     <DataTemplate DataType="{x:Type messageBox:ButtonBehavior}">
                                         <Button
                                             Content="{Binding Path=ButtonContent}"
+                                            IsCancel="{Binding Path=IsCancel}"
                                             IsDefault="{Binding Path=IsDefault}"
                                             Style="{Binding Path=Style}">
 

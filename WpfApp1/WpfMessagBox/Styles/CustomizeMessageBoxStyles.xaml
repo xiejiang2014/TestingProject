@@ -56,11 +56,10 @@
 
                                 <!--  自定义内容区  -->
                                 <ContentControl
-                                    x:Name="CustomizeContentControl"
+                                    x:Name="PART_CustomizeContentControl"
                                     Grid.Row="0"
                                     HorizontalAlignment="{Binding Path=HorizontalContentAlignment}"
                                     VerticalAlignment="{Binding Path=VerticalContentAlignment}"
-                                    Content="{Binding Path=(messageBox:MessageBoxViewModel.CustomizeContent)}"
                                     UseLayoutRounding="True" />
 
                                 <!--  按钮区  -->
@@ -79,6 +78,7 @@
                                         <DataTemplate DataType="{x:Type messageBox:ButtonBehavior}">
                                             <Button
                                                 Content="{Binding Path=ButtonContent}"
+                                                IsCancel="{Binding Path=IsCancel}"
                                                 IsDefault="{Binding Path=IsDefault}"
                                                 IsEnabled="{Binding Path=CanExecute}"
                                                 Style="{Binding Path=Style}">
@@ -107,10 +107,10 @@
                             Binding="{Binding Path=(messageBox:MessageBoxViewModel.IsScrollViewerVisible)}"
                             Value="true">
                             <Setter
-                                TargetName="CustomizeContentControl"
+                                TargetName="PART_CustomizeContentControl"
                                 Property="Template">
                                 <Setter.Value>
-                                    <ControlTemplate>
+                                    <ControlTemplate TargetType="ContentControl">
                                         <ScrollViewer
                                             Padding="{Binding Path=(messageBox:MessageBoxViewModel.Padding)}"
                                             HorizontalScrollBarVisibility="{Binding Path=(messageBox:MessageBoxViewModel.HorizontalScrollBarVisibility)}"

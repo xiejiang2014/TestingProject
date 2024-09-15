@@ -10,12 +10,12 @@ using System.Windows.Media;
 
 namespace WpfMessageBox;
 
-public interface ICustomizeContentViewModel : INotifyPropertyChanged
-{
-    Action? MessageBoxRequestToClose { get; set; }
+//public interface ICustomizeContentViewModel : INotifyPropertyChanged
+//{
+//    Action? MessageBoxRequestToClose { get; set; }
 
-    Action? MessageBoxRequestToOk { get; set; }
-}
+//    Action? MessageBoxRequestToOk { get; set; }
+//}
 
 public class MessageBoxViewModel : INotifyPropertyChanged
 {
@@ -33,46 +33,46 @@ public class MessageBoxViewModel : INotifyPropertyChanged
 
     public object? CustomizeContent { get; set; }
 
-    private ICustomizeContentViewModel? _customizeContentViewModel;
+    //private ICustomizeContentViewModel? _customizeContentViewModel;
 
-    public ICustomizeContentViewModel? CustomizeContentViewModel
-    {
-        get => _customizeContentViewModel;
-        set
-        {
-            if (_customizeContentViewModel is not null)
-            {
-                _customizeContentViewModel.MessageBoxRequestToClose -= MessageBoxRequestToClose;
-                _customizeContentViewModel.MessageBoxRequestToOk    -= MessageBoxRequestToOk;
-            }
+    //public ICustomizeContentViewModel? CustomizeContentViewModel
+    //{
+    //    get => _customizeContentViewModel;
+    //    set
+    //    {
+    //        if (_customizeContentViewModel is not null)
+    //        {
+    //            _customizeContentViewModel.MessageBoxRequestToClose -= MessageBoxRequestToClose;
+    //            _customizeContentViewModel.MessageBoxRequestToOk    -= MessageBoxRequestToOk;
+    //        }
 
-            _customizeContentViewModel = value;
+    //        _customizeContentViewModel = value;
 
-            if (_customizeContentViewModel is not null)
-            {
-                _customizeContentViewModel.MessageBoxRequestToClose += MessageBoxRequestToClose;
-                _customizeContentViewModel.MessageBoxRequestToOk    += MessageBoxRequestToOk;
-            }
-        }
-    }
+    //        if (_customizeContentViewModel is not null)
+    //        {
+    //            _customizeContentViewModel.MessageBoxRequestToClose += MessageBoxRequestToClose;
+    //            _customizeContentViewModel.MessageBoxRequestToOk    += MessageBoxRequestToOk;
+    //        }
+    //    }
+    //}
 
-    private void MessageBoxRequestToOk()
-    {
-        Result = MessageBoxResults.Ok;
-        if (OkButtonBehavior.CanExecute)
-        {
-            OkButtonBehavior.ClickAction?.Invoke();
-        }
-    }
+    //private void MessageBoxRequestToOk()
+    //{
+    //    Result = MessageBoxResults.Ok;
+    //    if (OkButtonBehavior.CanExecute)
+    //    {
+    //        OkButtonBehavior.ClickAction?.Invoke();
+    //    }
+    //}
 
-    private void MessageBoxRequestToClose()
-    {
-        Result = MessageBoxResults.Close;
-        if (CloseButtonBehavior.CanExecute)
-        {
-            CloseButtonBehavior.ClickAction?.Invoke();
-        }
-    }
+    //private void MessageBoxRequestToClose()
+    //{
+    //    Result = MessageBoxResults.Close;
+    //    if (CloseButtonBehavior.CanExecute)
+    //    {
+    //        CloseButtonBehavior.ClickAction?.Invoke();
+    //    }
+    //}
 
     public MessageBoxResults Result { get; set; } = MessageBoxResults.None;
 
@@ -166,11 +166,11 @@ public class MessageBoxViewModel : INotifyPropertyChanged
     {
         IsClosed = true;
 
-        if (_customizeContentViewModel is not null)
-        {
-            _customizeContentViewModel.MessageBoxRequestToClose -= MessageBoxRequestToClose;
-            _customizeContentViewModel.MessageBoxRequestToOk    -= MessageBoxRequestToOk;
-        }
+        //if (_customizeContentViewModel is not null)
+        //{
+        //    _customizeContentViewModel.MessageBoxRequestToClose -= MessageBoxRequestToClose;
+        //    _customizeContentViewModel.MessageBoxRequestToOk    -= MessageBoxRequestToOk;
+        //}
     }
 
     /// <summary>
@@ -191,6 +191,7 @@ public class MessageBoxViewModel : INotifyPropertyChanged
 
 
     #endregion
+
     public Task WaitUntilClosed()
     {
         return Task.Run(() =>
@@ -202,10 +203,14 @@ public class MessageBoxViewModel : INotifyPropertyChanged
         });
     }
 
+    #region PropertyChanged
+
     public event PropertyChangedEventHandler? PropertyChanged;
 
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
+
+    #endregion
 }

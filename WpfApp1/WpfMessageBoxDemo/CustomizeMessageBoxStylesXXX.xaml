@@ -109,6 +109,7 @@
                                     <DataTemplate DataType="{x:Type wpfMessageBox:ButtonBehavior}">
                                         <Button
                                             Content="{Binding Path=ButtonContent}"
+                                            IsCancel="{Binding Path=IsCancel}"
                                             IsDefault="{Binding Path=IsDefault}"
                                             IsEnabled="{Binding Path=CanExecute}"
                                             Style="{Binding Path=Style}">
