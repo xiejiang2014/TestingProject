@@ -45,9 +45,20 @@
                             HorizontalAlignment="Right"
                             VerticalAlignment="Top"
                             Classes="MessageBoxClose"
-                            Content="{Binding Path=CloseButtonBehavior.ButtonContent}"
+                            Content="{Binding Path=ButtonContent}"
                             Cursor="Hand"
-                            IsEnabled="{Binding Path=CloseButtonBehavior.CanExecute}" />
+                            DataContext="{Binding CloseButtonBehavior}"
+                            IsEnabled="{Binding Path=CanExecute}">
+
+                            <Button.IsVisible>
+                                <MultiBinding Converter="{x:Static valueConverter:AllFalseConverter.Default}">
+                                    <Binding
+                                        Converter="{x:Static ObjectConverters.IsNull}"
+                                        Path="ClickAction" />
+                                    <Binding Path="ForceHidden" />
+                                </MultiBinding>
+                            </Button.IsVisible>
+                        </Button>
 
                         <!--  自定义内容和按钮区  -->
                         <Grid
