@@ -22,6 +22,16 @@ public partial class MessageBoxManager : INotifyPropertyChanged
     public static MessageBoxManager Default { get; } = new();
 
 
+    public static object OkButtonDefaultContent { get; set; } = "确定";
+
+    public static object YesButtonDefaultContent { get; set; } = "是";
+
+    public static object NoButtonDefaultContent { get; set; } = "否";
+
+    public static object CancelButtonDefaultContent { get; set; } = "取消";
+
+    public static object CloseButtonDefaultContent { get; set; } = "X";
+
     /// <summary>
     /// 默认的弹窗背景遮罩色
     /// </summary>
@@ -31,15 +41,15 @@ public partial class MessageBoxManager : INotifyPropertyChanged
     {
         InitializeComponent();
 
-        var boolToVisibilityConverter = new BoolToVisibilityConverter {UseHidden = true};
+        var boolToVisibilityConverter = new BoolToVisibilityConverter { UseHidden = true };
 
         //将自身的 Visibility 绑定到自身的 IsShowingAnyMessageBox 属性上
         var binding = new Binding()
-        {
-            Source    = this,
-            Path      = new PropertyPath(nameof(IsAnyMessageBoxVisible)),
-            Converter = boolToVisibilityConverter
-        };
+                      {
+                          Source    = this,
+                          Path      = new PropertyPath(nameof(IsAnyMessageBoxVisible)),
+                          Converter = boolToVisibilityConverter
+                      };
         SetBinding(VisibilityProperty, binding);
 
         AddHandler(ButtonBase.ClickEvent, new RoutedEventHandler(Button_OnClick));
@@ -48,7 +58,7 @@ public partial class MessageBoxManager : INotifyPropertyChanged
 
     private void Button_OnClick(object sender, RoutedEventArgs e)
     {
-        if (e.OriginalSource is Button {DataContext: ButtonBehavior {CanExecute: true} buttonBehavior})
+        if (e.OriginalSource is Button { DataContext: ButtonBehavior { CanExecute: true } buttonBehavior })
         {
             buttonBehavior.ClickAction?.Invoke();
         }
@@ -60,100 +70,19 @@ public partial class MessageBoxManager : INotifyPropertyChanged
     public bool IsAnyMessageBoxVisible { get; private set; }
 
 
-    private readonly ConcurrentDictionary<MessageBoxViewModel, MessageLayer>
-        _messageBoxViewModelAndLayerDic = new();
-
-    #region 完全自定义内容框
+    private readonly ConcurrentDictionary<MessageBoxViewModel, MessageLayer> _messageBoxViewModelAndLayerDic = new();
 
     /// <summary>
-    /// 显示自定义内容对话框
+    /// 快速设置按钮为 MessageButtonTypes 中提供的几种模式之一.
+    /// 弹窗关闭后可从 MessageBoxViewModel.Result 判断按钮点击结果.
     /// </summary>
-    /// <param name="customizeContent">自定义内容对象</param>
-    /// <param name="title">标题</param>
-    /// <param name="messageButtonType">按钮类型</param>
-    /// <param name="isCloseButtonVisible">是否显示关闭按钮</param>
-    /// <returns></returns>
-    public MessageBoxViewModel CreateCustomizeMessageBox(
-        object             customizeContent,
-        string             title                = "",
-        MessageButtonTypes messageButtonType    = MessageButtonTypes.OkOnly,
-        bool               isCloseButtonVisible = false)
-    {
-        var messageBoxViewModel = new MessageBoxViewModel
-        {
-            CustomizeContent = customizeContent,
-            Title            = title,
-            MessageBoxType   = MessageBoxTypes.Customize
-        };
-
-        return SetMessageBoxViewModelButtons(messageBoxViewModel, messageButtonType, isCloseButtonVisible);
-    }
-
-    #endregion 完全自定义内容框
-
-
-    #region 文本消息框
-
-    /// <summary>
-    /// 显示自定义文本对话框
-    /// </summary>
-    /// <param name="message">自定义文本</param>
-    /// <param name="title">标题</param>
-    /// <param name="messageButtonType">按钮类型</param>
-    /// <param name="isCloseButtonVisible">是否显示关闭按钮</param>
-    /// <returns></returns>
-    public MessageBoxViewModel CreateTextMessageBoxViewModel(
-        string             message,
-        string             title                = "",
-        MessageButtonTypes messageButtonType    = MessageButtonTypes.OkOnly,
-        bool               isCloseButtonVisible = false
-    )
-    {
-        var messageBoxViewModel = new MessageBoxViewModel()
-        {
-            Message        = message,
-            Title          = title,
-            MessageBoxType = MessageBoxTypes.TextMessage
-        };
-
-        return SetMessageBoxViewModelButtons(messageBoxViewModel, messageButtonType, isCloseButtonVisible);
-    }
-
-    #endregion 文本消息框
-
-    #region 显示等待框
-
-    /// <summary>
-    /// 显示一个正在等待的对话框,该对话框没有可交互元素,用户可通过取消按钮发送取消请求.
-    /// </summary>
-    /// <param name="message">要显示的文本</param>
-    /// <param name="title">标题文本</param>
-    /// <param name="isCancelButtonVisible">是否显示取消按钮</param>
-    /// <returns></returns>
-    public MessageBoxViewModel CreateWaitingMessageBox(string message               = "",
-                                                       string title                 = "",
-                                                       bool   isCancelButtonVisible = false
-    )
-    {
-        var messageBoxViewModel = new MessageBoxViewModel()
-        {
-            Message        = message,
-            Title          = title,
-            MessageBoxType = MessageBoxTypes.Waiting
-        };
-
-        return SetMessageBoxViewModelButtons(messageBoxViewModel,
-                                             isCancelButtonVisible
-                                                 ? MessageButtonTypes.CancelOnly
-                                                 : MessageButtonTypes.NoButton,
-                                             false);
-    }
-
-    #endregion 显示等待框
-
-    private MessageBoxViewModel SetMessageBoxViewModelButtons(MessageBoxViewModel messageBoxViewModel,
-                                                              MessageButtonTypes  messageButtonType,
-                                                              bool                isCloseButtonVisible)
+    /// <param name="messageBoxViewModel"></param>
+    /// <param name="messageButtonType"></param>
+    /// <param name="isCloseButtonVisible"></param>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
+    public void QuickSetButtons(MessageBoxViewModel messageBoxViewModel,
+                                MessageButtonTypes  messageButtonType,
+                                bool                isCloseButtonVisible = false)
     {
         var isOkButtonVisible     = false;
         var isYesButtonVisible    = false;
@@ -198,58 +127,61 @@ public partial class MessageBoxManager : INotifyPropertyChanged
         if (isOkButtonVisible)
         {
             messageBoxViewModel.ButtonBehaviors.Add(messageBoxViewModel.OkButtonBehavior);
+            messageBoxViewModel.OkButtonBehavior.ButtonContent = OkButtonDefaultContent;
             messageBoxViewModel.OkButtonBehavior.ClickAction = () =>
-            {
-                //将对话框结果设为ok,并关闭对话框
-                messageBoxViewModel.Result = MessageBoxResults.Ok;
-                CloseMessageBox(messageBoxViewModel);
-            };
+                                                               {
+                                                                   //将对话框结果设为ok,并关闭对话框
+                                                                   messageBoxViewModel.Result = MessageBoxResults.Ok;
+                                                                   CloseMessageBox(messageBoxViewModel);
+                                                               };
         }
 
         //同上
         if (isYesButtonVisible)
         {
             messageBoxViewModel.ButtonBehaviors.Add(messageBoxViewModel.YesButtonBehavior);
+            messageBoxViewModel.YesButtonBehavior.ButtonContent = YesButtonDefaultContent;
             messageBoxViewModel.YesButtonBehavior.ClickAction = () =>
-            {
-                messageBoxViewModel.Result = MessageBoxResults.Yes;
-                CloseMessageBox(messageBoxViewModel);
-            };
+                                                                {
+                                                                    messageBoxViewModel.Result = MessageBoxResults.Yes;
+                                                                    CloseMessageBox(messageBoxViewModel);
+                                                                };
         }
 
         //同上
         if (isNoButtonVisible)
         {
             messageBoxViewModel.ButtonBehaviors.Add(messageBoxViewModel.NoButtonBehavior);
+            messageBoxViewModel.NoButtonBehavior.ButtonContent = NoButtonDefaultContent;
             messageBoxViewModel.NoButtonBehavior.ClickAction = () =>
-            {
-                messageBoxViewModel.Result = MessageBoxResults.No;
-                CloseMessageBox(messageBoxViewModel);
-            };
+                                                               {
+                                                                   messageBoxViewModel.Result = MessageBoxResults.No;
+                                                                   CloseMessageBox(messageBoxViewModel);
+                                                               };
         }
 
         //同上
         if (isCancelButtonVisible)
         {
             messageBoxViewModel.ButtonBehaviors.Add(messageBoxViewModel.CancelButtonBehavior);
+            messageBoxViewModel.CancelButtonBehavior.ButtonContent = CancelButtonDefaultContent;
             messageBoxViewModel.CancelButtonBehavior.ClickAction = () =>
-            {
-                messageBoxViewModel.Result = MessageBoxResults.Cancel;
-                CloseMessageBox(messageBoxViewModel);
-            };
+                                                                   {
+                                                                       messageBoxViewModel.Result = MessageBoxResults.Cancel;
+                                                                       CloseMessageBox(messageBoxViewModel);
+                                                                   };
         }
 
         //同上
         if (isCloseButtonVisible)
         {
+            messageBoxViewModel.CloseButtonBehavior.ButtonContent = CloseButtonDefaultContent;
             messageBoxViewModel.CloseButtonBehavior.ClickAction = () =>
-            {
-                messageBoxViewModel.Result = MessageBoxResults.Close;
-                CloseMessageBox(messageBoxViewModel);
-            };
+                                                                  {
+                                                                      messageBoxViewModel.Result = MessageBoxResults.Close;
+                                                                      CloseMessageBox(messageBoxViewModel);
+                                                                  };
         }
-
-        return messageBoxViewModel;
     }
 
     /// <summary>
@@ -270,41 +202,19 @@ public partial class MessageBoxManager : INotifyPropertyChanged
         }
 
         //为 messageBoxViewModel 创建显示层并显示
-        var newLayer = new MessageLayer {MessageBoxViewModel = messageBoxViewModel};
+        var newLayer = new MessageLayer { MessageBoxViewModel = messageBoxViewModel };
 
         if (messageBoxViewModel.MaskBrush is null) //在没有明确指定遮罩的画刷时,按照默认规则设置遮罩颜色.
         {
             if (messageBoxViewModel.IsMaskVisible)
             {
-                var background = messageBoxViewModel.MessageBoxType switch
-                                 {
-                                     MessageBoxTypes.Waiting =>
-                                         Application.Current?.TryFindResource("WaitingMessageBackground"),
-
-                                     MessageBoxTypes.TextMessage =>
-                                         Application.Current?.TryFindResource("TextMessageBackground"),
-
-                                     MessageBoxTypes.Customize =>
-                                         Application.Current?.TryFindResource("CustomizeBackground"),
-
-                                     _ => DefaultBackground
-                                 } ?? DefaultBackground;
-
-                if (background is Brush brush)
-                {
-                    messageBoxViewModel.MaskBrush = brush;
-                }
-                else
-                {
-                    messageBoxViewModel.MaskBrush = DefaultBackground;
-                }
+                messageBoxViewModel.MaskBrush ??= DefaultBackground;
             }
             else
             {
                 messageBoxViewModel.MaskBrush = Brushes.Transparent;
             }
         }
-
 
         _messageBoxViewModelAndLayerDic.TryAdd(messageBoxViewModel, newLayer);
         LayersPanel.Children.Add(newLayer);
@@ -381,7 +291,7 @@ public partial class MessageBoxManager : INotifyPropertyChanged
     {
         RunDefaultClosingAnimation(messageBoxViewModel,
                                    () => CloseMessageBox(messageBoxViewModel)
-        );
+                                  );
     }
 
     /// <summary>
@@ -409,7 +319,9 @@ public partial class MessageBoxManager : INotifyPropertyChanged
 
     public MessageBoxViewModel? LastOrDefaultMessageBox()
     {
-        return _messageBoxViewModelAndLayerDic.Any() ? _messageBoxViewModelAndLayerDic.Last().Key : null;
+        return _messageBoxViewModelAndLayerDic.Any()
+            ? _messageBoxViewModelAndLayerDic.Last().Key
+            : null;
     }
 
 
@@ -453,8 +365,12 @@ public partial class MessageBoxManager : INotifyPropertyChanged
         layer.MessageLayerRootContentControl.RenderTransform = scaleTransform;
 
         //以起始点为中心进行缩放.如果没有指定起始点,那么默认从本MessageBoxManager的中心点
-        var pointX = startX == -1 ? 0.5d : startX / ActualWidth;
-        var pointY = startY == -1 ? 0.5d : startY / ActualHeight;
+        var pointX = startX == -1
+            ? 0.5d
+            : startX / ActualWidth;
+        var pointY = startY == -1
+            ? 0.5d
+            : startY / ActualHeight;
 
         layer.MessageLayerRootContentControl.RenderTransformOrigin = new Point(pointX, pointY);
 
@@ -476,8 +392,8 @@ public partial class MessageBoxManager : INotifyPropertyChanged
             timeLines.AddRange(CreateColorChangingTimeline("MaskBackgroundBrush",
                                                            Colors.Transparent,
                                                            Color.FromArgb(99, 0, 0, 0)
-                               )
-            );
+                                                          )
+                              );
 
             //创建故事版,并将所有的动画放入故事版中
             var translationStoryboard = new Storyboard();
@@ -485,15 +401,15 @@ public partial class MessageBoxManager : INotifyPropertyChanged
 
             translationStoryboard.Completed += (_,
                                                 _
-            ) =>
-            {
-                //todo 这里应该删除动画
-                //control.RenderTransform = null;
-                //control.Background = new SolidColorBrush(Color.FromArgb(99, 0, 0, 0));
-                translationStoryboard.Stop();
+                                               ) =>
+                                               {
+                                                   //todo 这里应该删除动画
+                                                   //control.RenderTransform = null;
+                                                   //control.Background = new SolidColorBrush(Color.FromArgb(99, 0, 0, 0));
+                                                   translationStoryboard.Stop();
 
-                animationCompletedAction?.Invoke();
-            };
+                                                   animationCompletedAction?.Invoke();
+                                               };
 
             //播放动画
             translationStoryboard.Begin(this);
@@ -537,8 +453,12 @@ public partial class MessageBoxManager : INotifyPropertyChanged
         layer.MessageLayerRootContentControl.RenderTransform = scaleTransform;
 
         //以起始点为中心进行缩放.如果没有指定起始点,那么默认从本MessageBoxManager的中心点
-        var pointX = endX == -1 ? 0.5d : endX / ActualWidth;
-        var pointY = endY == -1 ? 0.5d : endY / ActualHeight;
+        var pointX = endX == -1
+            ? 0.5d
+            : endX / ActualWidth;
+        var pointY = endY == -1
+            ? 0.5d
+            : endY / ActualHeight;
         layer.MessageLayerRootContentControl.RenderTransformOrigin = new Point(pointX, pointY);
 
         try
@@ -556,8 +476,8 @@ public partial class MessageBoxManager : INotifyPropertyChanged
                 timeLines.AddRange(CreateColorChangingTimeline("MaskBackgroundBrush",
                                                                solidColorBrush.Color,
                                                                Colors.Transparent
-                                   )
-                );
+                                                              )
+                                  );
             }
 
 
@@ -567,12 +487,12 @@ public partial class MessageBoxManager : INotifyPropertyChanged
 
             translationStoryboard.Completed += (_,
                                                 _
-            ) =>
-            {
-                //todo 这里应该删除动画
-                translationStoryboard.Stop();
-                animationCompletedAction?.Invoke();
-            };
+                                               ) =>
+                                               {
+                                                   //todo 这里应该删除动画
+                                                   translationStoryboard.Stop();
+                                                   animationCompletedAction?.Invoke();
+                                               };
 
             //播放动画
             translationStoryboard.Begin(this);
@@ -603,21 +523,21 @@ public partial class MessageBoxManager : INotifyPropertyChanged
     {
         //X 轴平缩放画  不管初始态如何,保证在结束时调整为 targetValue
         var scaleXDoubleAnimationUsingKeyFrames = new DoubleAnimationUsingKeyFrames()
-        {
-            FillBehavior = FillBehavior.HoldEnd,
-            KeyFrames = new DoubleKeyFrameCollection()
-            {
-                new EasingDoubleKeyFrame()
-                {
-                    KeyTime = KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(100)),
-                    Value   = targetValue,
-                    EasingFunction = new CircleEase()
-                    {
-                        EasingMode = EasingMode.EaseIn
-                    }
-                }
-            }
-        };
+                                                  {
+                                                      FillBehavior = FillBehavior.HoldEnd,
+                                                      KeyFrames = new DoubleKeyFrameCollection()
+                                                                  {
+                                                                      new EasingDoubleKeyFrame()
+                                                                      {
+                                                                          KeyTime = KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(100)),
+                                                                          Value   = targetValue,
+                                                                          EasingFunction = new CircleEase()
+                                                                                           {
+                                                                                               EasingMode = EasingMode.EaseIn
+                                                                                           }
+                                                                      }
+                                                                  }
+                                                  };
 
         Storyboard.SetTargetName(scaleXDoubleAnimationUsingKeyFrames, targetName);
         Storyboard.SetTargetProperty(scaleXDoubleAnimationUsingKeyFrames,
@@ -626,21 +546,21 @@ public partial class MessageBoxManager : INotifyPropertyChanged
 
         //Y 轴平缩放画  不管初始态如何,保证在结束时调整为 targetValue
         var scaleYDoubleAnimationUsingKeyFrames = new DoubleAnimationUsingKeyFrames()
-        {
-            FillBehavior = FillBehavior.HoldEnd,
-            KeyFrames = new DoubleKeyFrameCollection()
-            {
-                new EasingDoubleKeyFrame()
-                {
-                    KeyTime = KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(100)),
-                    Value   = targetValue,
-                    EasingFunction = new CircleEase()
-                    {
-                        EasingMode = EasingMode.EaseIn
-                    }
-                }
-            }
-        };
+                                                  {
+                                                      FillBehavior = FillBehavior.HoldEnd,
+                                                      KeyFrames = new DoubleKeyFrameCollection()
+                                                                  {
+                                                                      new EasingDoubleKeyFrame()
+                                                                      {
+                                                                          KeyTime = KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(100)),
+                                                                          Value   = targetValue,
+                                                                          EasingFunction = new CircleEase()
+                                                                                           {
+                                                                                               EasingMode = EasingMode.EaseIn
+                                                                                           }
+                                                                      }
+                                                                  }
+                                                  };
 
         Storyboard.SetTargetName(scaleYDoubleAnimationUsingKeyFrames, targetName);
         Storyboard.SetTargetProperty(scaleYDoubleAnimationUsingKeyFrames,
@@ -664,28 +584,28 @@ public partial class MessageBoxManager : INotifyPropertyChanged
         if (startingColor is null)
         {
             easingColorKeyFrame = new EasingColorKeyFrame()
-            {
-                KeyTime = KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(200)),
-                Value   = targetColor,
-            };
+                                  {
+                                      KeyTime = KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(200)),
+                                      Value   = targetColor,
+                                  };
         }
         else
         {
             easingColorKeyFrame = new EasingColorKeyFrame(startingColor.Value)
-            {
-                KeyTime = KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(200)),
-                Value   = targetColor,
-            };
+                                  {
+                                      KeyTime = KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(200)),
+                                      Value   = targetColor,
+                                  };
         }
 
         var colorAnimationUsingKeyFrames = new ColorAnimationUsingKeyFrames()
-        {
-            FillBehavior = FillBehavior.HoldEnd,
-            KeyFrames = new ColorKeyFrameCollection()
-            {
-                easingColorKeyFrame
-            }
-        };
+                                           {
+                                               FillBehavior = FillBehavior.HoldEnd,
+                                               KeyFrames = new ColorKeyFrameCollection()
+                                                           {
+                                                               easingColorKeyFrame
+                                                           }
+                                           };
 
         Storyboard.SetTargetName(colorAnimationUsingKeyFrames, targetName);
         Storyboard.SetTargetProperty(colorAnimationUsingKeyFrames, new PropertyPath(SolidColorBrush.ColorProperty));
@@ -695,10 +615,14 @@ public partial class MessageBoxManager : INotifyPropertyChanged
 
     #endregion 动画
 
+    #region PropertyChanged
+
     public event PropertyChangedEventHandler? PropertyChanged;
 
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
+
+    #endregion
 }

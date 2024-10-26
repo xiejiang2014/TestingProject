@@ -31,23 +31,11 @@
             VerticalAlignment="Stretch"
             Content="{Binding}"
             PointerPressed="MessageLayerRootContentControl_OnPointerPressed">
+
             <ContentControl.DataTemplates>
-                <avaMessageBox:MessageContentTemplateSelector>
-                    <!--  在后台被模版选择器调用  -->
-                    <DataTemplate x:Key="WaitingMessageTemplate">
-                        <avaMessageBox:WaitingBox />
-                    </DataTemplate>
-
-                    <!--  在后台被模版选择器调用  -->
-                    <DataTemplate x:Key="TextMessageTemplate">
-                        <avaMessageBox:TextMessageBox />
-                    </DataTemplate>
-
-                    <!--  在后台被模版选择器调用  -->
-                    <DataTemplate x:Key="CustomizeTemplate">
-                        <avaMessageBox:CustomizeMessageBox />
-                    </DataTemplate>
-                </avaMessageBox:MessageContentTemplateSelector>
+                <DataTemplate DataType="avaMessageBox:MessageBoxViewModel">
+                    <avaMessageBox:MessageBox />
+                </DataTemplate>
             </ContentControl.DataTemplates>
 
         </ContentControl>

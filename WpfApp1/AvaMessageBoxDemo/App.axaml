@@ -7,6 +7,6 @@
 
     <Application.Styles>
         <FluentTheme />
-        <StyleInclude Source="avares://AvaMessageBox/Styles/MessageBoxStyles.axaml" />
+        <StyleInclude Source="avares://AvaMessageBox/Themes/Generic.axaml" />
     </Application.Styles>
 </Application>

@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Data;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Threading;
@@ -15,8 +16,19 @@ public partial class MessageBoxManager : UserControl
 {
     public static MessageBoxManager Default { get; } = new();
 
+    public static object OkButtonDefaultContent { get; set; } = "ç¡®å®š";
+
+    public static object YesButtonDefaultContent { get; set; } = "æ˜¯";
+
+    public static object NoButtonDefaultContent { get; set; } = "å¦";
+
+    public static object CancelButtonDefaultContent { get; set; } = "å–æ¶ˆ";
+
+    public static object CloseButtonDefaultContent { get; set; } = "X";
+
+
     /// <summary>
-    /// Ä¬ÈÏµÄµ¯´°±³¾°ÕÚÕÖÉ«
+    /// é»˜è®¤çš„å¼¹çª—èƒŒæ™¯é®ç½©è‰²
     /// </summary>
     public SolidColorBrush DefaultBackground { get; set; } = new(Color.FromArgb(50, 0, 0, 0));
 
@@ -24,12 +36,13 @@ public partial class MessageBoxManager : UserControl
     {
         InitializeComponent();
 
+        //è¿™ä¸ªå·²ç»åœ¨ xaml ä¸­å®ç°äº†
+        //this.Bind(UserControl.IsVisibleProperty, new Binding(path: nameof(IsAnyMessageBoxVisible))
+        //                                         {
+        //                                             Source = this
+        //                                         });
 
         AddHandler(Button.ClickEvent, Buttons_OnClick);
-        //var textBlock = new TextBlock();
-        //var text      = textBlock.GetObservable(TextBlock.TextProperty);
-
-        //this.GetObservable()
     }
 
     private void Buttons_OnClick(object? sender, RoutedEventArgs e)
@@ -41,102 +54,118 @@ public partial class MessageBoxManager : UserControl
     }
 
 
-    private readonly ConcurrentDictionary<MessageBoxViewModel, MessageLayer>
-        _messageBoxViewModelAndLayerDic = new();
+    /// <summary>
+    /// å½“å‰æ˜¯å¦æ˜¾ç¤ºäº†ä»»ä½•å¯¹è¯æ¡†
+    /// </summary>
+    public bool IsAnyMessageBoxVisible { get; private set; }
 
 
-    #region ÍêÈ«×Ô¶¨ÒåÄÚÈİ¿ò
+    private readonly ConcurrentDictionary<MessageBoxViewModel, MessageLayer> _messageBoxViewModelAndLayerDic = new();
+
+
+    //#region å®Œå…¨è‡ªå®šä¹‰å†…å®¹æ¡†
+
+    ///// <summary>
+    ///// æ˜¾ç¤ºè‡ªå®šä¹‰å†…å®¹å¯¹è¯æ¡†
+    ///// </summary>
+    ///// <param name="customizeContent">è‡ªå®šä¹‰å†…å®¹å¯¹è±¡</param>
+    ///// <param name="title">æ ‡é¢˜</param>
+    ///// <param name="messageButtonType">æŒ‰é’®ç±»å‹</param>
+    ///// <param name="isCloseButtonVisible">æ˜¯å¦æ˜¾ç¤ºå…³é—­æŒ‰é’®</param>
+    ///// <returns></returns>
+    //public MessageBoxViewModel CreateCustomizeMessageBox(
+    //    object             customizeContent,
+    //    string             title                = "",
+    //    MessageButtonTypes messageButtonType    = MessageButtonTypes.OkOnly,
+    //    bool               isCloseButtonVisible = false)
+    //{
+    //    var messageBoxViewModel = new MessageBoxViewModel
+    //                              {
+    //                                  CustomizeContent = customizeContent,
+    //                                  Title            = title,
+    //                                  MessageBoxType   = MessageBoxTypes.Customize
+    //                              };
+
+    //    QuickSetButtons(messageBoxViewModel, messageButtonType, isCloseButtonVisible);
+    //    return messageBoxViewModel;
+    //}
+
+    //#endregion å®Œå…¨è‡ªå®šä¹‰å†…å®¹æ¡†
+
+
+    //#region æ–‡æœ¬æ¶ˆæ¯æ¡†
+
+    ///// <summary>
+    ///// æ˜¾ç¤ºè‡ªå®šä¹‰æ–‡æœ¬å¯¹è¯æ¡†
+    ///// </summary>
+    ///// <param name="message">è‡ªå®šä¹‰æ–‡æœ¬</param>
+    ///// <param name="title">æ ‡é¢˜</param>
+    ///// <param name="messageButtonType">æŒ‰é’®ç±»å‹</param>
+    ///// <param name="isCloseButtonVisible">æ˜¯å¦æ˜¾ç¤ºå…³é—­æŒ‰é’®</param>
+    ///// <returns></returns>
+    //public MessageBoxViewModel CreateTextMessageBoxViewModel(
+    //    string             message,
+    //    string             title                = "",
+    //    MessageButtonTypes messageButtonType    = MessageButtonTypes.OkOnly,
+    //    bool               isCloseButtonVisible = false
+    //)
+    //{
+    //    var messageBoxViewModel = new MessageBoxViewModel()
+    //                              {
+    //                                  Message        = message,
+    //                                  Title          = title,
+    //                                  MessageBoxType = MessageBoxTypes.TextMessage
+    //                              };
+
+    //    QuickSetButtons(messageBoxViewModel, messageButtonType, isCloseButtonVisible);
+    //    return messageBoxViewModel;
+    //}
+
+    //#endregion æ–‡æœ¬æ¶ˆæ¯æ¡†
+
+    //#region æ˜¾ç¤ºç­‰å¾…æ¡†
+
+    ///// <summary>
+    ///// æ˜¾ç¤ºä¸€ä¸ªæ­£åœ¨ç­‰å¾…çš„å¯¹è¯æ¡†,è¯¥å¯¹è¯æ¡†æ²¡æœ‰å¯äº¤äº’å…ƒç´ ,ç”¨æˆ·å¯é€šè¿‡å–æ¶ˆæŒ‰é’®å‘é€å–æ¶ˆè¯·æ±‚.
+    ///// </summary>
+    ///// <param name="message">è¦æ˜¾ç¤ºçš„æ–‡æœ¬</param>
+    ///// <param name="title">æ ‡é¢˜æ–‡æœ¬</param>
+    ///// <param name="isCancelButtonVisible">æ˜¯å¦æ˜¾ç¤ºå–æ¶ˆæŒ‰é’®</param>
+    ///// <returns></returns>
+    //public MessageBoxViewModel CreateWaitingMessageBox(string message               = "",
+    //                                                   string title                 = "",
+    //                                                   bool   isCancelButtonVisible = false
+    //)
+    //{
+    //    var messageBoxViewModel = new MessageBoxViewModel()
+    //                              {
+    //                                  Message        = message,
+    //                                  Title          = title,
+    //                                  MessageBoxType = MessageBoxTypes.Waiting
+    //                              };
+
+    //    QuickSetButtons(messageBoxViewModel,
+    //                           isCancelButtonVisible
+    //                               ? MessageButtonTypes.CancelOnly
+    //                               : MessageButtonTypes.NoButton,
+    //                           false);
+
+    //    return messageBoxViewModel;
+    //}
+
+    //#endregion æ˜¾ç¤ºç­‰å¾…æ¡†
 
     /// <summary>
-    /// ÏÔÊ¾×Ô¶¨ÒåÄÚÈİ¶Ô»°¿ò
+    /// å¿«é€Ÿè®¾ç½®æŒ‰é’®ä¸º MessageButtonTypes ä¸­æä¾›çš„å‡ ç§æ¨¡å¼ä¹‹ä¸€.
+    /// å¼¹çª—å…³é—­åå¯ä» MessageBoxViewModel.Result åˆ¤æ–­æŒ‰é’®ç‚¹å‡»ç»“æœ.
     /// </summary>
-    /// <param name="customizeContent">×Ô¶¨ÒåÄÚÈİ¶ÔÏó</param>
-    /// <param name="title">±êÌâ</param>
-    /// <param name="messageButtonType">°´Å¥ÀàĞÍ</param>
-    /// <param name="isCloseButtonVisible">ÊÇ·ñÏÔÊ¾¹Ø±Õ°´Å¥</param>
-    /// <returns></returns>
-    public MessageBoxViewModel CreateCustomizeMessageBox(
-        object             customizeContent,
-        string             title                = "",
-        MessageButtonTypes messageButtonType    = MessageButtonTypes.OkOnly,
-        bool               isCloseButtonVisible = false)
-    {
-        var messageBoxViewModel = new MessageBoxViewModel
-                                  {
-                                      CustomizeContent = customizeContent,
-                                      Title            = title,
-                                      MessageBoxType   = MessageBoxTypes.Customize
-                                  };
-
-        return SetMessageBoxViewModelButtons(messageBoxViewModel, messageButtonType, isCloseButtonVisible);
-    }
-
-    #endregion ÍêÈ«×Ô¶¨ÒåÄÚÈİ¿ò
-
-
-    #region ÎÄ±¾ÏûÏ¢¿ò
-
-    /// <summary>
-    /// ÏÔÊ¾×Ô¶¨ÒåÎÄ±¾¶Ô»°¿ò
-    /// </summary>
-    /// <param name="message">×Ô¶¨ÒåÎÄ±¾</param>
-    /// <param name="title">±êÌâ</param>
-    /// <param name="messageButtonType">°´Å¥ÀàĞÍ</param>
-    /// <param name="isCloseButtonVisible">ÊÇ·ñÏÔÊ¾¹Ø±Õ°´Å¥</param>
-    /// <returns></returns>
-    public MessageBoxViewModel CreateTextMessageBoxViewModel(
-        string             message,
-        string             title                = "",
-        MessageButtonTypes messageButtonType    = MessageButtonTypes.OkOnly,
-        bool               isCloseButtonVisible = false
-    )
-    {
-        var messageBoxViewModel = new MessageBoxViewModel()
-                                  {
-                                      Message        = message,
-                                      Title          = title,
-                                      MessageBoxType = MessageBoxTypes.TextMessage
-                                  };
-
-        return SetMessageBoxViewModelButtons(messageBoxViewModel, messageButtonType, isCloseButtonVisible);
-    }
-
-    #endregion ÎÄ±¾ÏûÏ¢¿ò
-
-    #region ÏÔÊ¾µÈ´ı¿ò
-
-    /// <summary>
-    /// ÏÔÊ¾Ò»¸öÕıÔÚµÈ´ıµÄ¶Ô»°¿ò,¸Ã¶Ô»°¿òÃ»ÓĞ¿É½»»¥ÔªËØ,ÓÃ»§¿ÉÍ¨¹ıÈ¡Ïû°´Å¥·¢ËÍÈ¡ÏûÇëÇó.
-    /// </summary>
-    /// <param name="message">ÒªÏÔÊ¾µÄÎÄ±¾</param>
-    /// <param name="title">±êÌâÎÄ±¾</param>
-    /// <param name="isCancelButtonVisible">ÊÇ·ñÏÔÊ¾È¡Ïû°´Å¥</param>
-    /// <returns></returns>
-    public MessageBoxViewModel CreateWaitingMessageBox(string message               = "",
-                                                       string title                 = "",
-                                                       bool   isCancelButtonVisible = false
-    )
-    {
-        var messageBoxViewModel = new MessageBoxViewModel()
-                                  {
-                                      Message        = message,
-                                      Title          = title,
-                                      MessageBoxType = MessageBoxTypes.Waiting
-                                  };
-
-        return SetMessageBoxViewModelButtons(messageBoxViewModel,
-                                             isCancelButtonVisible
-                                                 ? MessageButtonTypes.CancelOnly
-                                                 : MessageButtonTypes.NoButton,
-                                             false);
-    }
-
-    #endregion ÏÔÊ¾µÈ´ı¿ò
-
-
-    private MessageBoxViewModel SetMessageBoxViewModelButtons(MessageBoxViewModel messageBoxViewModel,
-                                                              MessageButtonTypes  messageButtonType,
-                                                              bool                isCloseButtonVisible)
+    /// <param name="messageBoxViewModel"></param>
+    /// <param name="messageButtonType"></param>
+    /// <param name="isCloseButtonVisible"></param>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
+    public void QuickSetButtons(MessageBoxViewModel messageBoxViewModel,
+                                MessageButtonTypes  messageButtonType,
+                                bool                isCloseButtonVisible = false)
     {
         var isOkButtonVisible     = false;
         var isYesButtonVisible    = false;
@@ -177,22 +206,24 @@ public partial class MessageBoxManager : UserControl
         }
 
 
-        //°´ÏÂok°´Å¥Ê±ÒªÖ´ĞĞµÄÎ¯ÍĞ
+        //æŒ‰ä¸‹okæŒ‰é’®æ—¶è¦æ‰§è¡Œçš„å§”æ‰˜
         if (isOkButtonVisible)
         {
             messageBoxViewModel.ButtonBehaviors.Add(messageBoxViewModel.OkButtonBehavior);
+            messageBoxViewModel.OkButtonBehavior.ButtonContent = OkButtonDefaultContent;
             messageBoxViewModel.OkButtonBehavior.ClickAction = () =>
                                                                {
-                                                                   //½«¶Ô»°¿ò½á¹ûÉèÎªok,²¢¹Ø±Õ¶Ô»°¿ò
+                                                                   //å°†å¯¹è¯æ¡†ç»“æœè®¾ä¸ºok,å¹¶å…³é—­å¯¹è¯æ¡†
                                                                    messageBoxViewModel.Result = MessageBoxResults.Ok;
                                                                    CloseMessageBox(messageBoxViewModel);
                                                                };
         }
 
-        //Í¬ÉÏ
+        //åŒä¸Š
         if (isYesButtonVisible)
         {
             messageBoxViewModel.ButtonBehaviors.Add(messageBoxViewModel.YesButtonBehavior);
+            messageBoxViewModel.YesButtonBehavior.ButtonContent = YesButtonDefaultContent;
             messageBoxViewModel.YesButtonBehavior.ClickAction = () =>
                                                                 {
                                                                     messageBoxViewModel.Result = MessageBoxResults.Yes;
@@ -200,10 +231,11 @@ public partial class MessageBoxManager : UserControl
                                                                 };
         }
 
-        //Í¬ÉÏ
+        //åŒä¸Š
         if (isNoButtonVisible)
         {
             messageBoxViewModel.ButtonBehaviors.Add(messageBoxViewModel.NoButtonBehavior);
+            messageBoxViewModel.NoButtonBehavior.ButtonContent = NoButtonDefaultContent;
             messageBoxViewModel.NoButtonBehavior.ClickAction = () =>
                                                                {
                                                                    messageBoxViewModel.Result = MessageBoxResults.No;
@@ -211,10 +243,11 @@ public partial class MessageBoxManager : UserControl
                                                                };
         }
 
-        //Í¬ÉÏ
+        //åŒä¸Š
         if (isCancelButtonVisible)
         {
             messageBoxViewModel.ButtonBehaviors.Add(messageBoxViewModel.CancelButtonBehavior);
+            messageBoxViewModel.CancelButtonBehavior.ButtonContent = CancelButtonDefaultContent;
             messageBoxViewModel.CancelButtonBehavior.ClickAction = () =>
                                                                    {
                                                                        messageBoxViewModel.Result = MessageBoxResults.Cancel;
@@ -222,22 +255,21 @@ public partial class MessageBoxManager : UserControl
                                                                    };
         }
 
-        //Í¬ÉÏ
+        //åŒä¸Š
         if (isCloseButtonVisible)
         {
+            messageBoxViewModel.CloseButtonBehavior.ButtonContent = CloseButtonDefaultContent;
             messageBoxViewModel.CloseButtonBehavior.ClickAction = () =>
                                                                   {
                                                                       messageBoxViewModel.Result = MessageBoxResults.Close;
                                                                       CloseMessageBox(messageBoxViewModel);
                                                                   };
         }
-
-        return messageBoxViewModel;
     }
 
 
     /// <summary>
-    /// ÏÔÊ¾Ò»¸öÏûÏ¢¿ò
+    /// æ˜¾ç¤ºä¸€ä¸ªæ¶ˆæ¯æ¡†
     /// </summary>
     /// <param name="messageBoxViewModel"></param>
     public void ShowMessageBox(MessageBoxViewModel messageBoxViewModel)
@@ -253,29 +285,14 @@ public partial class MessageBoxManager : UserControl
             return;
         }
 
-        //Îª messageBoxViewModel ´´½¨ÏÔÊ¾²ã²¢ÏÔÊ¾
+        //ä¸º messageBoxViewModel åˆ›å»ºæ˜¾ç¤ºå±‚å¹¶æ˜¾ç¤º
         var newLayer = new MessageLayer { MessageBoxViewModel = messageBoxViewModel };
 
-        if (messageBoxViewModel.MaskBrush is null) //ÔÚÃ»ÓĞÃ÷È·Ö¸¶¨ÕÚÕÖµÄ»­Ë¢Ê±,°´ÕÕÄ¬ÈÏ¹æÔòÉèÖÃÕÚÕÖÑÕÉ«.
+        if (messageBoxViewModel.MaskBrush is null) //åœ¨æ²¡æœ‰æ˜ç¡®æŒ‡å®šé®ç½©çš„ç”»åˆ·æ—¶,æŒ‰ç…§é»˜è®¤è§„åˆ™è®¾ç½®é®ç½©é¢œè‰².
         {
             if (messageBoxViewModel.IsMaskVisible)
             {
-                var background = messageBoxViewModel.MessageBoxType switch
-                                 {
-                                     MessageBoxTypes.Waiting     => Application.Current?.FindResource("WaitingMessageBackground"),
-                                     MessageBoxTypes.TextMessage => Application.Current?.FindResource("TextMessageBackground"),
-                                     MessageBoxTypes.Customize   => Application.Current?.FindResource("CustomizeBackground"),
-                                     _ => DefaultBackground
-                                 } ?? DefaultBackground;
-
-                if (background is IBrush brush)
-                {
-                    messageBoxViewModel.MaskBrush = brush;
-                }
-                else
-                {
-                    messageBoxViewModel.MaskBrush = DefaultBackground;
-                }
+                messageBoxViewModel.MaskBrush ??= DefaultBackground;
             }
             else
             {
@@ -283,9 +300,10 @@ public partial class MessageBoxManager : UserControl
             }
         }
 
-
         _messageBoxViewModelAndLayerDic.TryAdd(messageBoxViewModel, newLayer);
         LayersPanel.Children.Add(newLayer);
+
+        IsAnyMessageBoxVisible = true;
     }
 
 
@@ -304,7 +322,7 @@ public partial class MessageBoxManager : UserControl
     }
 
     /// <summary>
-    /// Òş²ØÖ¸¶¨µÄÏûÏ¢¿ò
+    /// éšè—æŒ‡å®šçš„æ¶ˆæ¯æ¡†
     /// </summary>
     /// <param name="messageBoxViewModel"></param>
     public void HideMessageBox(MessageBoxViewModel messageBoxViewModel)
@@ -322,7 +340,7 @@ public partial class MessageBoxManager : UserControl
     }
 
     /// <summary>
-    /// ½«Òş²ØµÄÏûÏ¢¿òÖØĞÂÏÔÊ¾
+    /// å°†éšè—çš„æ¶ˆæ¯æ¡†é‡æ–°æ˜¾ç¤º
     /// </summary>
     /// <param name="messageBoxViewModel"></param>
     public void DisplayMessageBox(MessageBoxViewModel messageBoxViewModel)
@@ -352,9 +370,9 @@ public partial class MessageBoxManager : UserControl
             keyValuePair.Value.IsVisible = true;
         }
     }
-    
+
     /// <summary>
-    /// ¹Ø±ÕÖ¸¶¨µÄÏûÏ¢¿ò
+    /// å…³é—­æŒ‡å®šçš„æ¶ˆæ¯æ¡†
     /// </summary>
     /// <param name="messageBoxViewModel"></param>
     public void CloseMessageBox(MessageBoxViewModel messageBoxViewModel)
@@ -365,7 +383,7 @@ public partial class MessageBoxManager : UserControl
             return;
         }
 
-        //´ÓÏÔÊ¾ÈİÆ÷ÖĞÒÆ³ı
+        //ä»æ˜¾ç¤ºå®¹å™¨ä¸­ç§»é™¤
         if (_messageBoxViewModelAndLayerDic.TryRemove(messageBoxViewModel, out var layer))
         {
             LayersPanel.Children.Remove(layer);
@@ -376,7 +394,10 @@ public partial class MessageBoxManager : UserControl
 
     public MessageBoxViewModel? LastOrDefaultMessageBox()
     {
-        return _messageBoxViewModelAndLayerDic.Any() ? _messageBoxViewModelAndLayerDic.Last().Key : null;
+        return _messageBoxViewModelAndLayerDic.Any()
+            ? _messageBoxViewModelAndLayerDic.Last().Key
+            : null;
     }
 
+    //todo åŠ¨ç”»
 }

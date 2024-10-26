@@ -16,29 +16,6 @@
     PreviewMouseLeftButtonDown="MessageLayer_OnPreviewMouseLeftButtonDown"
     mc:Ignorable="d">
 
-    <!--  各种对话框的模版  -->
-    <UserControl.Resources>
-        <wpfMessageBox:MessageContentTemplateSelector x:Key="MessageContentTemplateSelector" />
-
-        <!--  在后台被模版选择器调用  -->
-        <!--  ReSharper disable once Xaml.RedundantResource  -->
-        <DataTemplate x:Key="WaitingMessageTemplate">
-            <wpfMessageBox:WaitingBox />
-        </DataTemplate>
-
-        <!--  在后台被模版选择器调用  -->
-        <!--  ReSharper disable once Xaml.RedundantResource  -->
-        <DataTemplate x:Key="TextMessageTemplate">
-            <wpfMessageBox:TextMessageBox />
-        </DataTemplate>
-
-        <!--  在后台被模版选择器调用  -->
-        <!--  ReSharper disable once Xaml.RedundantResource  -->
-        <DataTemplate x:Key="CustomizeTemplate">
-            <wpfMessageBox:CustomizeMessageBox />
-        </DataTemplate>
-    </UserControl.Resources>
-
     <Grid>
 
         <!--  遮罩  -->
@@ -53,16 +30,22 @@
                                  Converter={x:Static valueConverter:BoolToVisibilityConverter.Default}}" />
 
 
-        <!--  对话框内容区, 内容为MessageBoxViewModel 显示模版由 MessageContentTemplateSelector决定  -->
         <ContentControl
             x:Name="MessageLayerRootContentControl"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
             Content="{Binding}"
-            ContentTemplateSelector="{StaticResource MessageContentTemplateSelector}"
             DataContext="{Binding ElementName=ThisMessageLayer,
                                   Path=MessageBoxViewModel}"
-            MouseLeftButtonDown="MessageLayerRootContentControl_OnMouseLeftButtonDown" />
+            MouseLeftButtonDown="MessageLayerRootContentControl_OnMouseLeftButtonDown">
+            <ContentControl.ContentTemplate>
+                <DataTemplate>
+                    <wpfMessageBox:MessageBox />
+                </DataTemplate>
+            </ContentControl.ContentTemplate>
+
+        </ContentControl>
+
     </Grid>
 
 </UserControl>

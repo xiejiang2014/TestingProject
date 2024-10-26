@@ -5,12 +5,6 @@
     StartupUri="MainWindow.xaml">
     <Application.Resources>
         <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/WpfMessageBox;component/Styles/MessageBoxStyles.xaml" />
-                <ResourceDictionary Source="/CustomizeMessageBoxStylesXXX.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-
-
             <Style
                 x:Key="ExtButtonStyle"
                 TargetType="ButtonBase">
@@ -21,8 +15,6 @@
                     Property="Foreground"
                     Value="Red" />
             </Style>
-
         </ResourceDictionary>
-
     </Application.Resources>
 </Application>

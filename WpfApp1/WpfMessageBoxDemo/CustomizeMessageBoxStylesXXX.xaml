@@ -9,13 +9,13 @@
 
     <Style
         x:Key="CustomizeMessageBoxStyleXXX"
-        TargetType="{x:Type wpfMessageBox:CustomizeMessageBox}">
+        TargetType="{x:Type wpfMessageBox:MessageBox}">
         <Setter
             Property="Background"
             Value="Transparent" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type wpfMessageBox:CustomizeMessageBox}">
+                <ControlTemplate TargetType="{x:Type wpfMessageBox:MessageBox}">
                     <Border
                         x:Name="CustomizeMessageBoxRootBorder"
                         HorizontalAlignment="{Binding Path=HorizontalAlignment}"

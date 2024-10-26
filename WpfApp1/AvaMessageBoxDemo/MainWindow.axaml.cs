@@ -15,35 +15,46 @@ namespace AvaMessageBoxDemo
 
         private void ButtonBase_OnClick(object? sender, RoutedEventArgs e)
         {
-            var messageBoxViewModel =
-                MessageBoxManager.Default.CreateTextMessageBoxViewModel("ÎÄ±¾ÏûÏ¢",
-                                                                        "×Ô¶¨Òå±êÌâ",
-                                                                        MessageButtonTypes.YesNoCancel,
-                                                                        isCloseButtonVisible: true);
+            var messageBoxViewModel = new MessageBoxViewModel()
+                                      {
+                                          Message = "æ–‡æœ¬æ¶ˆæ¯",
+                                          Title   = "è‡ªå®šä¹‰æ ‡é¢˜",
+                                      };
+
+            MessageBoxManager.Default.QuickSetButtons(messageBoxViewModel,
+                                                      MessageButtonTypes.YesNoCancel,
+                                                      isCloseButtonVisible: true);
+
+
             MessageBoxManager.Default.ShowMessageBox(messageBoxViewModel);
         }
 
         private void ButtonBase2_OnClick(object? sender, RoutedEventArgs e)
         {
             var userContent = new UserContent();
-            var messageBoxViewModel =
-                MessageBoxManager.Default.CreateCustomizeMessageBox(userContent,
-                                                                    "×Ô¶¨Òå±êÌâ",
-                                                                    MessageButtonTypes.NoButton,
-                                                                    true);
+
+            var messageBoxViewModel = new MessageBoxViewModel()
+                                      {
+                                          Message          = "æ–‡æœ¬æ¶ˆæ¯",
+                                          Title            = "è‡ªå®šä¹‰æ ‡é¢˜",
+                                          CustomizeContent = userContent
+                                      };
+
+
+            MessageBoxManager.Default.QuickSetButtons(messageBoxViewModel,
+                                                      MessageButtonTypes.NoButton,
+                                                      isCloseButtonVisible: true);
+
 
             messageBoxViewModel.HorizontalContentAlignment = HorizontalAlignment.Center;
             messageBoxViewModel.VerticalContentAlignment   = VerticalAlignment.Center;
 
             messageBoxViewModel.ButtonBehaviors.Add(new ButtonBehavior()
-            {
-                ButtonContent = "×Ô¶¨Òå°´Å¥",
-                ClickAction = () =>
-                              {
-                                  MessageBoxManager.Default.CloseMessageBox(messageBoxViewModel);
-                              },
-                //Style = Application.Current.FindResource("ExtButtonStyle") as Style
-            });
+                                                    {
+                                                        ButtonContent = "è‡ªå®šä¹‰æŒ‰é’®",
+                                                        ClickAction   = () => { MessageBoxManager.Default.CloseMessageBox(messageBoxViewModel); },
+                                                        //Style = Application.Current.FindResource("ExtButtonStyle") as Style
+                                                    });
 
             //messageBoxViewModel.CloseButtonBehavior.ClickAction = () =>
             //                                                      {
@@ -59,7 +70,7 @@ namespace AvaMessageBoxDemo
             //var userContent = new UserContent2();
             //var messageBoxViewModel =
             //    MessageBoxManager.Default.CreateCustomizeMessageBox(userContent,
-            //                                                        "×Ô¶¨Òå±êÌâ",
+            //                                                        "è‡ªå®šä¹‰æ ‡é¢˜",
             //                                                        MessageButtonTypes.NoButton,
             //                                                        true);
 
@@ -69,7 +80,7 @@ namespace AvaMessageBoxDemo
 
             //messageBoxViewModel.ButtonBehaviors.Add(new ButtonBehavior()
             //                                        {
-            //                                            ButtonContent = "×Ô¶¨Òå°´Å¥",
+            //                                            ButtonContent = "è‡ªå®šä¹‰æŒ‰é’®",
             //                                            ClickAction = () =>
             //                                                          {
             //                                                              MessageBoxManager.Default.CloseMessageBoxWidthDefaultClosingAnimation(messageBoxViewModel);
@@ -97,7 +108,17 @@ namespace AvaMessageBoxDemo
 
         private void ButtonBase3_OnClick(object? sender, RoutedEventArgs e)
         {
-            var messageBoxViewModel = MessageBoxManager.Default.CreateWaitingMessageBox("ÎÄ±¾ÄÚÈÝ", "±êÌâ", true);
+            var messageBoxViewModel = new MessageBoxViewModel()
+                                      {
+                                          Message = "æ ‡é¢˜",
+                                          Title   = "æ–‡æœ¬å†…å®¹",
+                                      };
+
+            MessageBoxManager.Default.QuickSetButtons(messageBoxViewModel,
+                                                      MessageButtonTypes.YesNoCancel,
+                                                      isCloseButtonVisible: true);
+
+
             MessageBoxManager.Default.ShowMessageBox(messageBoxViewModel);
         }
     }

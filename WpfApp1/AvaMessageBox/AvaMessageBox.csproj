@@ -27,6 +27,13 @@
 
 
   <ItemGroup>
-    <UpToDateCheckInput Remove="Styles\ButtonStyles.axaml" />
+    <UpToDateCheckInput Remove="Themes\ButtonStyles.axaml" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <AvaloniaXaml Update="Themes\Generic.axaml">
+      <Generator>MSBuild:Compile</Generator>
+    </AvaloniaXaml>
   </ItemGroup>
 </Project>
