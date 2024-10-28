@@ -9,6 +9,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\..\..\..\MyRepository\xiejiang.CommonModule\wpf\AnyFalseToCollapsedConverter.cs" Link="ValueConverter\AnyFalseToCollapsedConverter.cs" />
+    <Compile Include="..\..\..\..\MyRepository\xiejiang.CommonModule\wpf\AnyTrueToCollapsedConverter.cs" Link="ValueConverter\AnyTrueToCollapsedConverter.cs" />
+    <Compile Include="..\..\..\..\MyRepository\xiejiang.CommonModule\wpf\AnyVisibleToVisibleConverter.cs" Link="ValueConverter\AnyVisibleToVisibleConverter.cs" />
+    <Compile Include="..\..\..\..\MyRepository\xiejiang.CommonModule\wpf\BoolToVisibilityConverter.cs" Link="ValueConverter\BoolToVisibilityConverter.cs" />
+    <Compile Include="..\..\..\..\MyRepository\xiejiang.CommonModule\wpf\IsNullConverter.cs" Link="ValueConverter\IsNullConverter.cs" />
+    <Compile Include="..\..\..\..\MyRepository\xiejiang.CommonModule\wpf\IsStringNullOrWhiteSpaceConverter.cs" Link="ValueConverter\IsStringNullOrWhiteSpaceConverter.cs" />
+    <Compile Include="..\..\..\..\MyRepository\xiejiang.CommonModule\wpf\NullToCollapsedConverter.cs" Link="ValueConverter\NullToCollapsedConverter.cs" />
+    <Compile Include="..\..\..\..\MyRepository\xiejiang.CommonModule\wpf\NullToVisibleConverter.cs" Link="ValueConverter\NullToVisibleConverter.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Fody" Version="6.8.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

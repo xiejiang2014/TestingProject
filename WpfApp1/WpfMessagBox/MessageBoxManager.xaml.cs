@@ -10,7 +10,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using WpfMessageBox.ValueConverter;
+using XieJiang.CommonModule;
 
 namespace WpfMessageBox;
 

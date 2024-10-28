@@ -110,8 +110,11 @@ namespace AvaMessageBoxDemo
         {
             var messageBoxViewModel = new MessageBoxViewModel()
                                       {
-                                          Message = "标题",
-                                          Title   = "文本内容",
+                                          Message           = "Message",
+                                          Title             = "Title",
+                                          IsIndeterminate   = true,
+                                          IsProgressVisible = true,
+                                          Progress          = 50
                                       };
 
             MessageBoxManager.Default.QuickSetButtons(messageBoxViewModel,

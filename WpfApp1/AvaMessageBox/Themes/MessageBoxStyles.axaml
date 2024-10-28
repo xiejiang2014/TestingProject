@@ -20,6 +20,9 @@
             <ControlTemplate TargetType="avaMessageBox:MessageBox">
                 <Border
                     x:Name="CustomizeMessageBoxRootBorder"
+                    MaxWidth="{Binding MaxWidth}"
+                    MaxHeight="{Binding MaxHeight}"
+                    Margin="{Binding Margin}"
                     HorizontalAlignment="{Binding Path=HorizontalAlignment}"
                     VerticalAlignment="{Binding Path=VerticalAlignment}"
                     x:DataType="avaMessageBox:MessageBoxViewModel"
@@ -30,6 +33,12 @@
                     UseLayoutRounding="True">
 
                     <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
                         <!--  标题  -->
                         <TextBlock
                             x:Name="PART_Title"
@@ -42,6 +51,7 @@
                         <!--  关闭按钮  -->
                         <Button
                             x:Name="PART_ButtonClose"
+                            Grid.Row="0"
                             HorizontalAlignment="Right"
                             VerticalAlignment="Top"
                             Classes="MessageBoxClose"
@@ -60,17 +70,18 @@
                             </Button.IsVisible>
                         </Button>
 
-                        <!--  自定义内容和按钮区  -->
+                        <!--  消息/自定义内容  -->
                         <Grid
+                            Grid.Row="1"
                             MinWidth="180"
                             MaxWidth="600"
-                            Margin="40">
+                            Margin="40"
+                            VerticalAlignment="Center">
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="*" />
-                                <RowDefinition Height="24" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
-
 
                             <!--  消息  -->
                             <TextBlock
@@ -79,57 +90,69 @@
                                 Margin="0,20"
                                 HorizontalAlignment="Center"
                                 FontSize="14"
+                                IsVisible="{Binding Path=Message,
+                                                    Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
                                 Text="{Binding Path=Message}"
                                 TextWrapping="WrapWithOverflow" />
+
+                            <ProgressBar
+                                Grid.Row="1"
+                                Height="4"
+                                IsIndeterminate="{Binding IsIndeterminate}"
+                                IsVisible="{Binding IsProgressVisible}"
+                                Value="{Binding Progress}" />
 
                             <!--  自定义内容区  -->
                             <ContentControl
                                 x:Name="PART_CustomizeContentControl"
-                                Grid.Row="0"
+                                Grid.Row="2"
                                 HorizontalAlignment="{Binding Path=HorizontalContentAlignment}"
                                 VerticalAlignment="{Binding Path=VerticalContentAlignment}"
                                 Content="{Binding Path=CustomizeContent}"
+                                IsVisible="{Binding Path=CustomizeContent,
+                                                    Converter={x:Static ObjectConverters.IsNotNull}}"
                                 UseLayoutRounding="True" />
 
-                            <!--  按钮区  -->
-                            <ItemsControl
-                                x:Name="PART_ButtonsControl"
-                                Grid.Row="2"
-                                HorizontalAlignment="Center"
-                                IsVisible="{Binding ElementName=PART_ButtonsControl,
-                                                    Path=!Items.Count}"
-                                ItemsSource="{Binding Path=ButtonBehaviors}">
-
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <StackPanel Orientation="Horizontal" />
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate DataType="{x:Type avaMessageBox:ButtonBehavior}">
-                                        <Button
-                                            Classes="MessageBox"
-                                            Classes.IsDefault="{Binding Path=IsDefault}"
-                                            Content="{Binding Path=ButtonContent}"
-                                            IsDefault="{Binding Path=IsDefault}"
-                                            IsEnabled="{Binding Path=CanExecute}">
-
-                                            <Button.IsVisible>
-                                                <MultiBinding Converter="{x:Static valueConverter:AllFalseConverter.Default}">
-                                                    <Binding
-                                                        Converter="{x:Static ObjectConverters.IsNull}"
-                                                        Path="ClickAction" />
-                                                    <Binding Path="ForceHidden" />
-                                                </MultiBinding>
-                                            </Button.IsVisible>
-                                        </Button>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-
-                            </ItemsControl>
-
                         </Grid>
+
+                        <!--  按钮区  -->
+                        <ItemsControl
+                            x:Name="PART_ButtonsControl"
+                            Grid.Row="2"
+                            HorizontalAlignment="Center"
+                            IsVisible="{Binding ElementName=PART_ButtonsControl,
+                                                Path=!Items.Count}"
+                            ItemsSource="{Binding Path=ButtonBehaviors}">
+
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="{x:Type avaMessageBox:ButtonBehavior}">
+                                    <Button
+                                        Classes="MessageBox"
+                                        Classes.IsDefault="{Binding Path=IsDefault}"
+                                        Content="{Binding Path=ButtonContent}"
+                                        IsCancel="{Binding Path=IsCancel}"
+                                        IsDefault="{Binding Path=IsDefault}"
+                                        IsEnabled="{Binding Path=CanExecute}">
+
+                                        <Button.IsVisible>
+                                            <MultiBinding Converter="{x:Static valueConverter:AllFalseConverter.Default}">
+                                                <Binding
+                                                    Converter="{x:Static ObjectConverters.IsNull}"
+                                                    Path="ClickAction" />
+                                                <Binding Path="ForceHidden" />
+                                            </MultiBinding>
+                                        </Button.IsVisible>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
                     </Grid>
                 </Border>
             </ControlTemplate>

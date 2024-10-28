@@ -1,10 +1,10 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonModule1="clr-namespace:XieJiang.CommonModule"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:messageBox="clr-namespace:WpfMessageBox"
-    xmlns:valueConverter="clr-namespace:WpfMessageBox.ValueConverter"
     mc:Ignorable="d">
 
     <Style TargetType="{x:Type messageBox:MessageBox}">
@@ -17,6 +17,11 @@
                 <ControlTemplate TargetType="{x:Type messageBox:MessageBox}">
                     <Border
                         x:Name="MessageBoxRootBorder"
+                        MinWidth="{Binding MinWidth}"
+                        MinHeight="{Binding MinHeight}"
+                        MaxWidth="{Binding MaxWidth}"
+                        MaxHeight="{Binding MaxHeight}"
+                        Margin="{Binding Margin}"
                         HorizontalAlignment="{Binding Path=HorizontalAlignment}"
                         VerticalAlignment="{Binding Path=VerticalAlignment}"
                         d:DataContext="{d:DesignInstance messageBox:MessageBoxViewModel}"
@@ -28,6 +33,12 @@
                         UseLayoutRounding="True">
 
                         <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
                             <!--  标题  -->
                             <TextBlock
                                 x:Name="PART_Title"
@@ -40,66 +51,108 @@
                             <!--  关闭按钮  -->
                             <Button
                                 x:Name="PART_ButtonClose"
+                                Grid.Row="0"
                                 HorizontalAlignment="Right"
                                 VerticalAlignment="Top"
-                                Cursor="Hand" />
+                                Content="{Binding Path=ButtonContent}"
+                                Cursor="Hand"
+                                DataContext="{Binding Path=CloseButtonBehavior}"
+                                IsEnabled="{Binding Path=CanExecute}"
+                                Style="{Binding Path=Style}">
 
-                            <!--  自定义内容和按钮区  -->
+                                <Button.Visibility>
+                                    <MultiBinding Converter="{x:Static commonModule1:AnyTrueToCollapsedConverter.Default}">
+                                        <Binding
+                                            Converter="{x:Static commonModule1:IsNullConverter.Default}"
+                                            Path="ClickAction" />
+                                        <Binding Path="ForceHidden" />
+                                    </MultiBinding>
+                                </Button.Visibility>
+
+                            </Button>
+
+                            <!--  消息/自定义内容  -->
                             <Grid
-                                MinWidth="180"
-                                MaxWidth="600"
-                                Margin="40">
+                                Grid.Row="1"
+                                VerticalAlignment="Center">
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="*" />
-                                    <RowDefinition Height="24" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
+
+                                <!--  消息  -->
+                                <TextBlock
+                                    x:Name="PART_MessageTextBlock"
+                                    Grid.Row="0"
+                                    Margin="0,20"
+                                    HorizontalAlignment="Center"
+                                    FontSize="14"
+                                    Text="{Binding Path=Message}"
+                                    TextWrapping="WrapWithOverflow"
+                                    Visibility="{Binding Path=Message,
+                                                         Converter={x:Static commonModule1:IsStringNullOrWhiteSpaceConverterToCollapsed.Default}}" />
+
+
+                                <ProgressBar
+                                    Grid.Row="1"
+                                    Height="4"
+                                    Margin="0,20"
+                                    IsIndeterminate="{Binding IsIndeterminate}"
+                                    Visibility="{Binding IsProgressVisible,
+                                                         Converter={x:Static commonModule1:BoolToVisibilityConverter.Default}}"
+                                    Value="{Binding Progress}" />
 
                                 <!--  自定义内容区  -->
                                 <ContentControl
                                     x:Name="PART_CustomizeContentControl"
-                                    Grid.Row="0"
+                                    Grid.Row="2"
                                     HorizontalAlignment="{Binding Path=HorizontalContentAlignment}"
                                     VerticalAlignment="{Binding Path=VerticalContentAlignment}"
-                                    UseLayoutRounding="True" />
+                                    UseLayoutRounding="True"
+                                    Visibility="{Binding Path=CustomizeContent,
+                                                         Converter={x:Static commonModule1:NullToCollapsedConverter.Default}}" />
 
-                                <!--  按钮区  -->
-                                <ItemsControl
-                                    x:Name="PART_ButtonsControl"
-                                    Grid.Row="2"
-                                    HorizontalAlignment="Center">
-
-                                    <ItemsControl.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <StackPanel Orientation="Horizontal" />
-                                        </ItemsPanelTemplate>
-                                    </ItemsControl.ItemsPanel>
-
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate DataType="{x:Type messageBox:ButtonBehavior}">
-                                            <Button
-                                                Content="{Binding Path=ButtonContent}"
-                                                IsCancel="{Binding Path=IsCancel}"
-                                                IsDefault="{Binding Path=IsDefault}"
-                                                IsEnabled="{Binding Path=CanExecute}"
-                                                Style="{Binding Path=Style}">
-
-
-                                                <Button.Visibility>
-                                                    <MultiBinding Converter="{x:Static valueConverter:AnyTrueToCollapsedConverter.Default}">
-                                                        <Binding
-                                                            Converter="{x:Static valueConverter:IsNullConverter.Default}"
-                                                            Path="ClickAction" />
-                                                        <Binding Path="ForceHidden" />
-                                                    </MultiBinding>
-                                                </Button.Visibility>
-
-                                            </Button>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
 
                             </Grid>
+
+
+                            <!--  按钮区  -->
+                            <ItemsControl
+                                x:Name="PART_ButtonsControl"
+                                Grid.Row="2"
+                                HorizontalAlignment="Center">
+
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Horizontal" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="{x:Type messageBox:ButtonBehavior}">
+                                        <Button
+                                            Content="{Binding Path=ButtonContent}"
+                                            IsCancel="{Binding Path=IsCancel}"
+                                            IsDefault="{Binding Path=IsDefault}"
+                                            IsEnabled="{Binding Path=CanExecute}"
+                                            Style="{Binding Path=Style}">
+
+
+                                            <Button.Visibility>
+                                                <MultiBinding Converter="{x:Static commonModule1:AnyTrueToCollapsedConverter.Default}">
+                                                    <Binding
+                                                        Converter="{x:Static commonModule1:IsNullConverter.Default}"
+                                                        Path="ClickAction" />
+                                                    <Binding Path="ForceHidden" />
+                                                </MultiBinding>
+                                            </Button.Visibility>
+
+                                        </Button>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
                         </Grid>
                     </Border>
 
@@ -134,9 +187,7 @@
                                 Value="Collapsed" />
                         </DataTrigger>
 
-
                     </ControlTemplate.Triggers>
-
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

@@ -45,6 +45,8 @@ public class MessageBoxViewModel : INotifyPropertyChanged
     public HorizontalAlignment HorizontalContentAlignment { get; set; } = HorizontalAlignment.Center;
     public VerticalAlignment   VerticalContentAlignment   { get; set; } = VerticalAlignment.Center;
 
+    public double MinHeight { get; set; } = 600;
+    public double MinWidth  { get; set; } = 800;
     public double MaxHeight { get; set; } = double.MaxValue;
     public double MaxWidth  { get; set; } = double.MaxValue;
 

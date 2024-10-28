@@ -85,10 +85,10 @@ public partial class MainWindow
         messageBoxViewModel.CloseButtonBehavior.ClickAction = () => { MessageBoxManager.Default.CloseMessageBoxWidthDefaultClosingAnimation(messageBoxViewModel); };
 
 
-        if (Application.Current.TryFindResource("CustomizeMessageBoxStyleXXX") is Style style)
-        {
-            messageBoxViewModel.Style = style;
-        }
+        //if (Application.Current.TryFindResource("CustomizeMessageBoxStyleXXX") is Style style)
+        //{
+        //    messageBoxViewModel.Style = style;
+        //}
 
         messageBoxViewModel.HorizontalAlignment = HorizontalAlignment.Right;
         messageBoxViewModel.VerticalAlignment   = VerticalAlignment.Stretch;
@@ -101,8 +101,10 @@ public partial class MainWindow
     {
         var messageBoxViewModel = new MessageBoxViewModel()
                                   {
-                                      Title   = "标题",
-                                      Message = "文本内容",
+                                      Title             = "标题",
+                                      Message           = "文本内容",
+                                      IsProgressVisible = true,
+                                      IsIndeterminate   = true
                                   };
 
         MessageBoxManager.Default.ShowMessageBox(messageBoxViewModel);
