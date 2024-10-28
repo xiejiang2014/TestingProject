@@ -54,12 +54,6 @@ public partial class MessageBoxManager : UserControl
     }
 
 
-    /// <summary>
-    /// 当前是否显示了任何对话框
-    /// </summary>
-    public bool IsAnyMessageBoxVisible { get; private set; }
-
-
     private readonly ConcurrentDictionary<MessageBoxViewModel, MessageLayer> _messageBoxViewModelAndLayerDic = new();
 
     /// <summary>
@@ -209,8 +203,6 @@ public partial class MessageBoxManager : UserControl
 
         _messageBoxViewModelAndLayerDic.TryAdd(messageBoxViewModel, newLayer);
         LayersPanel.Children.Add(newLayer);
-
-        IsAnyMessageBoxVisible = true;
     }
 
 
