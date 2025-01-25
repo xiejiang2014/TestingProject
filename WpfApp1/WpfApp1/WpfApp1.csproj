@@ -28,7 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WpfMessagBox\WpfMessagBox.csproj" />
+    <ProjectReference Include="..\WpfMessagBox\WpfMessageBox.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 
-namespace AvaMessageBoxDemo;
+namespace MessageBox.Avalonia.Demo;
 
 public partial class UserContent : UserControl
 {

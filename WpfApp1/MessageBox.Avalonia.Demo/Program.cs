@@ -1,7 +1,7 @@
 ﻿using Avalonia;
 using System;
 
-namespace AvaMessageBoxDemo
+namespace MessageBox.Avalonia.Demo
 {
     internal class Program
     {

@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace AvaMessageBox;
+namespace MessageBox.Avalonia;
 
 public class ButtonBehavior : INotifyPropertyChanged
 {

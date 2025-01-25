@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Linq;
 using Avalonia.Data.Converters;
 
-namespace AvaMessageBox.ValueConverter;
+namespace MessageBox.Avalonia.ValueConverter;
 
 public class AllFalseConverter : IMultiValueConverter
 {

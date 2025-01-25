@@ -1,5 +1,5 @@
 <Application
-    x:Class="AvaMessageBoxDemo.App"
+    x:Class="MessageBox.Avalonia.Demo.App"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     RequestedThemeVariant="Dark">
@@ -7,6 +7,6 @@
 
     <Application.Styles>
         <FluentTheme />
-        <StyleInclude Source="avares://AvaMessageBox/Themes/Generic.axaml" />
+        <StyleInclude Source="avares://MessageBox.Avalonia/Themes/Generic.axaml" />
     </Application.Styles>
 </Application>

@@ -3,7 +3,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using PropertyChanged;
 
-namespace AvaMessageBox;
+namespace MessageBox.Avalonia;
 
 [DoNotNotify]
 public partial class MessageLayer : UserControl

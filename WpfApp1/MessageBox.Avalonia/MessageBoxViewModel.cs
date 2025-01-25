@@ -9,7 +9,7 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Layout;
 using Avalonia.Media;
 
-namespace AvaMessageBox;
+namespace MessageBox.Avalonia;
 
 public class MessageBoxViewModel : INotifyPropertyChanged
 {

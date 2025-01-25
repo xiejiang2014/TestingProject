@@ -13,11 +13,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WpfMenus", "WpfMenus\WpfMen
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfMenusDemo", "WpfMenusDemo\WpfMenusDemo.csproj", "{DCBDF65E-DDD3-46E2-8B1D-BA254FAA9947}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AvaMessageBox", "AvaMessageBox\AvaMessageBox.csproj", "{826817E8-F973-431A-85D3-F35493A19DD0}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AvaMessageBoxDemo", "AvaMessageBoxDemo\AvaMessageBoxDemo.csproj", "{F17BCDEA-8874-49B5-943F-C7EB118F25DB}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AvaloniaFluentColors", "AvaloniaFluentColors\AvaloniaFluentColors.csproj", "{A1C45D2B-E87E-46FB-9154-600C5DE11846}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageBox.Avalonia", "MessageBox.Avalonia\MessageBox.Avalonia.csproj", "{C4DEBD80-BDCE-4A60-8708-D70079C57111}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageBox.Avalonia.Demo", "MessageBox.Avalonia.Demo\MessageBox.Avalonia.Demo.csproj", "{280A32DD-EAAA-40CA-BE3C-89C1C57B7FF4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,18 +45,18 @@ Global
 		{DCBDF65E-DDD3-46E2-8B1D-BA254FAA9947}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DCBDF65E-DDD3-46E2-8B1D-BA254FAA9947}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DCBDF65E-DDD3-46E2-8B1D-BA254FAA9947}.Release|Any CPU.Build.0 = Release|Any CPU
-		{826817E8-F973-431A-85D3-F35493A19DD0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{826817E8-F973-431A-85D3-F35493A19DD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{826817E8-F973-431A-85D3-F35493A19DD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{826817E8-F973-431A-85D3-F35493A19DD0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F17BCDEA-8874-49B5-943F-C7EB118F25DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F17BCDEA-8874-49B5-943F-C7EB118F25DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F17BCDEA-8874-49B5-943F-C7EB118F25DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F17BCDEA-8874-49B5-943F-C7EB118F25DB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A1C45D2B-E87E-46FB-9154-600C5DE11846}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A1C45D2B-E87E-46FB-9154-600C5DE11846}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A1C45D2B-E87E-46FB-9154-600C5DE11846}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A1C45D2B-E87E-46FB-9154-600C5DE11846}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C4DEBD80-BDCE-4A60-8708-D70079C57111}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4DEBD80-BDCE-4A60-8708-D70079C57111}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4DEBD80-BDCE-4A60-8708-D70079C57111}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4DEBD80-BDCE-4A60-8708-D70079C57111}.Release|Any CPU.Build.0 = Release|Any CPU
+		{280A32DD-EAAA-40CA-BE3C-89C1C57B7FF4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{280A32DD-EAAA-40CA-BE3C-89C1C57B7FF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{280A32DD-EAAA-40CA-BE3C-89C1C57B7FF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{280A32DD-EAAA-40CA-BE3C-89C1C57B7FF4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

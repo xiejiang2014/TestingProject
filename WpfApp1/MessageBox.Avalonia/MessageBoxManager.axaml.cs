@@ -9,7 +9,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Linq;
 
-namespace AvaMessageBox;
+namespace MessageBox.Avalonia;
 
 [DoNotNotify]
 public partial class MessageBoxManager : UserControl

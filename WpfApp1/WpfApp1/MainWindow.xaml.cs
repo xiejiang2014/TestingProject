@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using System.Windows;
-using WpfMessagBox;
+using WpfMessageBox;
 
 namespace WpfApp1;
 

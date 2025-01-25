@@ -3,7 +3,7 @@ using Avalonia.Controls.Metadata;
 using Avalonia.Controls.Primitives;
 using PropertyChanged;
 
-namespace AvaMessageBox;
+namespace MessageBox.Avalonia;
 
 [DoNotNotify]
 [TemplatePart("PART_Title",                   typeof(TextBlock))]

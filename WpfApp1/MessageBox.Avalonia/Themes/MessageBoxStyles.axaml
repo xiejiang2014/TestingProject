@@ -1,8 +1,8 @@
 <Styles
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:avaMessageBox="clr-namespace:AvaMessageBox"
-    xmlns:valueConverter="clr-namespace:AvaMessageBox.ValueConverter">
+    xmlns:messageBox="clr-namespace:MessageBox.Avalonia"
+    xmlns:valueConverter="clr-namespace:MessageBox.Avalonia.ValueConverter">
     <Design.PreviewWith>
         <Border Padding="20">
             <!--  Add Controls for Previewer Here  -->
@@ -10,14 +10,14 @@
     </Design.PreviewWith>
 
 
-    <Style Selector="avaMessageBox|MessageBox">
+    <Style Selector="messageBox|MessageBox">
         <Setter
             Property="Background"
             Value="Transparent" />
 
 
         <Setter Property="Template">
-            <ControlTemplate TargetType="avaMessageBox:MessageBox">
+            <ControlTemplate TargetType="messageBox:MessageBox">
                 <Border
                     x:Name="CustomizeMessageBoxRootBorder"
                     MaxWidth="{Binding MaxWidth}"
@@ -25,7 +25,7 @@
                     Margin="{Binding Margin}"
                     HorizontalAlignment="{Binding Path=HorizontalAlignment}"
                     VerticalAlignment="{Binding Path=VerticalAlignment}"
-                    x:DataType="avaMessageBox:MessageBoxViewModel"
+                    x:DataType="messageBox:MessageBoxViewModel"
                     Background="{StaticResource SystemControlBackgroundAltMediumLowBrush}"
                     BorderBrush="{TemplateBinding BorderBrush}"
                     BorderThickness="{TemplateBinding BorderThickness}"
@@ -131,7 +131,7 @@
                             </ItemsControl.ItemsPanel>
 
                             <ItemsControl.ItemTemplate>
-                                <DataTemplate DataType="{x:Type avaMessageBox:ButtonBehavior}">
+                                <DataTemplate DataType="{x:Type messageBox:ButtonBehavior}">
                                     <Button
                                         Classes="MessageBox"
                                         Classes.IsDefault="{Binding Path=IsDefault}"

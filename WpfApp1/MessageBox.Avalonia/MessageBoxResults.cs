@@ -1,4 +1,4 @@
-﻿namespace AvaMessageBox;
+﻿namespace MessageBox.Avalonia;
 
 public enum MessageBoxResults
 {

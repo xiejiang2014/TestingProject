@@ -1,13 +1,12 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
-using AvaMessageBox;
+using MessageBox.Avalonia;
 
-namespace AvaMessageBoxDemo
+namespace MessageBox.Avalonia.Demo
 {
     public partial class MainWindow : Window
     {
@@ -27,7 +26,6 @@ namespace AvaMessageBoxDemo
                                           Message = "文本消息",
                                           Title   = "自定义标题",
                                       };
-            messageBoxViewModel.Shown = () => messageBoxViewModel.Opacity = 1;
 
             MessageBoxManager.Default.QuickSetButtons(messageBoxViewModel,
                                                       MessageButtonTypes.YesNoCancel,
