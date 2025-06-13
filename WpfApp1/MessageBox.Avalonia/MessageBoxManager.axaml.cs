@@ -1,6 +1,4 @@
-using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Data;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Threading;
@@ -115,7 +113,7 @@ public partial class MessageBoxManager : UserControl
             messageBoxViewModel.OkButtonBehavior.ClickAction = () =>
                                                                {
                                                                    //将对话框结果设为ok,并关闭对话框
-                                                                   messageBoxViewModel.Result = MessageBoxResults.Ok;
+                                                                   messageBoxViewModel.Result = MessageBoxResults.OK;
                                                                    CloseMessageBox(messageBoxViewModel);
                                                                };
         }
@@ -179,6 +177,9 @@ public partial class MessageBoxManager : UserControl
         {
             throw new ArgumentNullException(nameof(messageBoxViewModel));
         }
+
+        messageBoxViewModel.IsClosed = false;
+        messageBoxViewModel.Result   = MessageBoxResults.None;
 
         if (!Dispatcher.UIThread.CheckAccess())
         {

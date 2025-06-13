@@ -3,7 +3,7 @@
 public enum MessageBoxResults
 {
     None,
-    Ok,
+    OK,
     Yes,
     No,
     Cancel,

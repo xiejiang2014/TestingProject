@@ -8,13 +8,13 @@ namespace MessageBox.Avalonia;
 [DoNotNotify]
 public partial class MessageLayer : UserControl
 {
-
     public MessageLayer()
     {
         InitializeComponent();
     }
 
     private MessageBoxViewModel? _messageBoxViewModel;
+
     public MessageBoxViewModel? MessageBoxViewModel
     {
         get => _messageBoxViewModel;

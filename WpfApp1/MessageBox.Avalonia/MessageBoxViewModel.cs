@@ -1,4 +1,3 @@
-using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -96,7 +95,7 @@ public class MessageBoxViewModel : INotifyPropertyChanged
     /// <summary>
     /// 是否已关闭
     /// </summary>
-    public bool IsClosed { get; private set; }
+    public bool IsClosed { get; internal set; }
 
     #endregion
 

@@ -1,39 +1,39 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
-    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-    <AssemblyVersion>1.0.23339.0853</AssemblyVersion>
-    <FileVersion>1.0.23339.0853</FileVersion>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+        <AssemblyVersion>1.0.23339.0853</AssemblyVersion>
+        <FileVersion>1.0.23339.0853</FileVersion>
+    </PropertyGroup>
 
 
-  <ItemGroup>
-    <PackageReference Include="Avalonia" Version="11.2.3" />
-    <!--<PackageReference Include="Avalonia.Desktop" Version="11.0.5" />-->
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.3" />
-    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.2.3" />
-    <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.2.3" />
+    <ItemGroup>
+        <PackageReference Include="Avalonia" Version="11.3.1" />
+        <!--<PackageReference Include="Avalonia.Desktop" Version="11.0.5" />-->
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.1" />
+        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.1" />
+        <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.2.6" />
 
-    <PackageReference Include="Fody" Version="6.8.0">
-	    <PrivateAssets>all</PrivateAssets>
-	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference PrivateAssets="All" Include="PropertyChanged.Fody" Version="4.1.0" />
+        <PackageReference Include="Fody" Version="6.9.2">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference PrivateAssets="All" Include="PropertyChanged.Fody" Version="4.1.0" />
 
-  </ItemGroup>
-
-
-  <ItemGroup>
-    <UpToDateCheckInput Remove="Themes\ButtonStyles.axaml" />
-  </ItemGroup>
+    </ItemGroup>
 
 
-  <ItemGroup>
-    <AvaloniaXaml Update="Themes\Generic.axaml">
-      <Generator>MSBuild:Compile</Generator>
-    </AvaloniaXaml>
-  </ItemGroup>
+    <ItemGroup>
+        <UpToDateCheckInput Remove="Themes\ButtonStyles.axaml" />
+    </ItemGroup>
+
+
+    <ItemGroup>
+        <AvaloniaXaml Update="Themes\Generic.axaml">
+            <Generator>MSBuild:Compile</Generator>
+        </AvaloniaXaml>
+    </ItemGroup>
 </Project>
